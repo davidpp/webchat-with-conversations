@@ -85,7 +85,32 @@ export function WebchatWithConversations({
 
   const handleClose = () => {
     setIsOpen(false)
-    setCurrentView('list')
+    setCurrentView('chat') // Always default to chat view
+  }
+
+  const handleFabClick = async () => {
+    // Check if there are any conversations
+    const conversationCount = conversationList.conversations.length
+
+    if (conversationCount === 0) {
+      // No conversations, create a new one
+      setIsCreating(true)
+      try {
+        await webchat.newConversation()
+        await conversationList.refreshPreviews()
+      } catch (error) {
+        console.error('Failed to create conversation:', error)
+      }
+      setIsCreating(false)
+    } else {
+      // Has conversations, select the most recent (first in the list)
+      const latestConversation = conversationList.conversations[0]
+      setCurrentConversationId(latestConversation.id)
+    }
+
+    // Always open in chat view, never list view
+    setCurrentView('chat')
+    setIsOpen(true)
   }
 
   return (
@@ -93,7 +118,7 @@ export function WebchatWithConversations({
       {/* FAB button in bottom-right corner */}
       {!isOpen && (
         <div className="webchat-fab-container">
-          <Fab onClick={() => setIsOpen(true)} imgUrl={configuration.botAvatar} />
+          <Fab onClick={handleFabClick} imgUrl={configuration.botAvatar} />
         </div>
       )}
 
