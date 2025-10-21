@@ -3,7 +3,6 @@ import './ConversationListPanel.css'
 
 interface ConversationListPanelProps {
   isOpen: boolean
-  onToggle: () => void
   onCreateConversation: () => void
   children: ReactNode
   isCreating?: boolean
@@ -11,7 +10,6 @@ interface ConversationListPanelProps {
 
 export function ConversationListPanel({
   isOpen,
-  onToggle,
   onCreateConversation,
   children,
   isCreating = false,
