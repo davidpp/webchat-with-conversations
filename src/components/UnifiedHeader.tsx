@@ -18,7 +18,6 @@ export function UnifiedHeader({
   showBackButton = false
 }: UnifiedHeaderProps) {
   const title = variant === 'list' ? 'Conversations' : (configuration.botName || 'Bot')
-  const showAvatar = variant === 'chat' && configuration.botAvatar
   const showDescription = variant === 'chat' && configuration.botDescription
 
   return (
@@ -35,13 +34,13 @@ export function UnifiedHeader({
           </button>
         )}
 
-        {/* Avatar - only in chat view */}
-        {showAvatar && (
+        {/* Avatar - shown in both views for consistent layout */}
+        {configuration.botAvatar && (
           <span className="unified-header-avatar">
             <img
               className="unified-header-avatar-image"
               src={configuration.botAvatar}
-              alt={configuration.botName || 'Bot'}
+              alt={variant === 'list' ? 'Conversations' : (configuration.botName || 'Bot')}
             />
           </span>
         )}

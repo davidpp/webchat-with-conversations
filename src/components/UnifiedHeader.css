@@ -11,7 +11,7 @@
   gap: var(--bpSpacing-3);
   padding: var(--bpSpacing-4);
   position: relative;
-  min-height: 60px;
+  min-height: var(--bpSpacing-15); /* ~60px */
 }
 
 /* Action buttons (back and close) */
@@ -19,8 +19,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: var(--bpSpacing-8); /* 32px */
+  height: var(--bpSpacing-8);
   padding: 0;
   border: none;
   background: transparent;
@@ -38,12 +38,12 @@
 
 .unified-header-action:focus-visible {
   outline: 2px solid var(--bpPrimary-600);
-  outline-offset: 2px;
+  outline-offset: var(--bpSpacing-0_5);
 }
 
 .unified-header-action svg {
-  width: 16px;
-  height: 16px;
+  width: var(--bpSpacing-4); /* 16px */
+  height: var(--bpSpacing-4);
   display: block;
 }
 
@@ -62,8 +62,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: var(--bpSpacing-10); /* 40px */
+  height: var(--bpSpacing-10);
   flex-shrink: 0;
   border-radius: var(--bpRadius-full);
   overflow: hidden;
@@ -82,7 +82,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--bpSpacing-0_5); /* ~2px */
 }
 
 /* Title - matches bpHeaderContentTitle */
@@ -114,11 +114,11 @@
 @media (max-width: 480px) {
   .unified-header-content {
     padding: var(--bpSpacing-3);
-    min-height: 56px;
+    min-height: var(--bpSpacing-14); /* ~56px */
   }
 
   .unified-header-action {
-    width: 36px;
-    height: 36px;
+    width: var(--bpSpacing-9); /* 36px */
+    height: var(--bpSpacing-9);
   }
 }

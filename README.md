@@ -49,13 +49,13 @@ Share demos with specific configurations using URL parameters:
 
 ```bash
 # Using a Botpress script URL directly
-http://localhost:5173/?https://files.bpcontent.cloud/2025/10/20/21/20251020211011-0T1QYFJQ.js
+http://localhost:5173/?https://files.bpcontent.cloud/[your-script-url].js
 
 # Using script parameter
-http://localhost:5173/?script=https://files.bpcontent.cloud/2025/10/20/21/20251020211011-0T1QYFJQ.js
+http://localhost:5173/?script=https://files.bpcontent.cloud/[your-script-url].js
 
 # Using just a client ID
-http://localhost:5173/?clientId=f0119422-b733-4b07-8cf5-b23e84305127
+http://localhost:5173/?clientId=your-client-id-here
 ```
 
 ### 3. Environment Variable
@@ -82,7 +82,7 @@ src/
 ├── components/
 │   ├── ConversationItem.tsx         # Individual list item
 │   ├── ConversationList.tsx         # List container
-│   ├── ConversationListPanel.tsx    # Sidebar panel
+│   ├── UnifiedHeader.tsx            # Unified header component
 │   └── WebchatWithConversations.tsx # Main wrapper
 ├── hooks/
 │   └── useConversationList.ts       # Conversation management
@@ -108,7 +108,6 @@ function App() {
       clientId="your-client-id"
       configuration={config}
       enableConversationList={true}
-      defaultOpen={true}
     />
   )
 }
@@ -122,8 +121,7 @@ function App() {
 | `configuration` | `Configuration` | Yes | - | Webchat configuration |
 | `apiUrl` | `string` | No | `https://webchat.botpress.cloud` | API URL |
 | `storageKey` | `string` | No | - | localStorage key |
-| `enableConversationList` | `boolean` | No | `true` | Show sidebar |
-| `defaultOpen` | `boolean` | No | `false` | Start open |
+| `enableConversationList` | `boolean` | No | `true` | Show conversation list |
 
 ## Building for Production
 
