@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useWebchat, type Configuration, Fab, MessageList, Composer, enrichMessage, StylesheetProvider } from '@botpress/webchat'
 import { ChevronLeft, X } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 import { ConversationList } from './ConversationList'
 import { useConversationList } from '../hooks/useConversationList'
 import './WebchatWithConversations.css'
@@ -174,6 +175,18 @@ export function WebchatWithConversations({
                     {isCreating ? 'Creating...' : '+ New Conversation'}
                   </button>
                 </div>
+
+                {configuration.footer && (
+                  <ReactMarkdown
+                    components={{
+                      a: ({ node, ...props }) => <a {...props} target="_blank" rel="noreferrer noopener" />,
+                    }}
+                    allowedElements={['a', 'strong', 'code', 'em', 'p', 'span']}
+                    className="bpComposerFooter"
+                  >
+                    {configuration.footer}
+                  </ReactMarkdown>
+                )}
               </div>
             )}
 
@@ -241,6 +254,7 @@ export function WebchatWithConversations({
                         sendMessage={webchat.client.sendMessage}
                         uploadFile={webchat.client.uploadFile}
                         composerPlaceholder={configuration.composerPlaceholder}
+                        footer={configuration.footer}
                         connected={true}
                       />
                     </div>
