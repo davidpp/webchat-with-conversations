@@ -1,3 +1,4 @@
+import { ChevronRight } from 'lucide-react'
 import type { ConversationPreview } from '../types/conversation'
 import './ConversationItem.css'
 
@@ -38,6 +39,9 @@ export function ConversationItem({ conversation, isActive, onClick }: Conversati
         <div className="conversation-meta">
           <span className="conversation-time">{timeAgo}</span>
         </div>
+      </div>
+      <div className="conversation-chevron">
+        <ChevronRight size={20} />
       </div>
     </div>
   )

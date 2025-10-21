@@ -39,21 +39,6 @@
   width: 100%;
 }
 
-.conversation-list-view-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--bpSpacing-5);
-  border-bottom: 1px solid var(--bpGray-100);
-  background: var(--bpGray-1);
-}
-
-.conversation-list-view-header h1 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--bpGray-900);
-}
 
 .conversation-list-view-content {
   flex: 1;
@@ -99,110 +84,6 @@
   width: 100%;
 }
 
-.chat-view-header {
-  display: flex;
-  align-items: center;
-  gap: var(--bpSpacing-3);
-  padding: var(--bpSpacing-4);
-  border-bottom: 1px solid var(--bpGray-100);
-  background: var(--bpGray-1);
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: none;
-  border-radius: calc(var(--bpRadius-lg) * var(--bpRadius-scale));
-  cursor: pointer;
-  color: var(--bpGray-800);
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.back-button:hover {
-  background-color: var(--bpGray-50);
-  color: var(--bpGray-900);
-}
-
-.back-button svg {
-  width: 16px !important;
-  height: 16px !important;
-  display: block;
-  min-width: 16px;
-  max-width: 16px;
-}
-
-.chat-view-header-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-  min-width: 0;
-}
-
-.bot-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--bpRadius-full);
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.bot-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.bot-info h2 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--bpGray-900);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.bot-description {
-  font-size: 0.8125rem;
-  color: var(--bpGray-700);
-  margin: 2px 0 0 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.close-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: none;
-  border-radius: calc(var(--bpRadius-lg) * var(--bpRadius-scale));
-  cursor: pointer;
-  color: var(--bpGray-800);
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.close-button:hover {
-  background-color: var(--bpGray-50);
-  color: var(--bpGray-900);
-}
-
-.close-button svg {
-  width: 16px !important;
-  height: 16px !important;
-  display: block;
-  min-width: 16px;
-  max-width: 16px;
-}
 
 .chat-view-messages {
   flex: 1;

@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useWebchat, type Configuration, Fab, MessageList, Composer, enrichMessage, StylesheetProvider } from '@botpress/webchat'
-import { ChevronLeft, X } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { ConversationList } from './ConversationList'
+import { UnifiedHeader } from './UnifiedHeader'
 import { useConversationList } from '../hooks/useConversationList'
 import './WebchatWithConversations.css'
 
@@ -144,16 +144,11 @@ export function WebchatWithConversations({
             {/* List View - Show all conversations */}
             {currentView === 'list' && enableConversationList && (
               <div className="conversation-list-view">
-                <div className="conversation-list-view-header">
-                  <h1>Conversations</h1>
-                  <button
-                    className="close-button"
-                    onClick={handleClose}
-                    aria-label="Close"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
+                <UnifiedHeader
+                  variant="list"
+                  configuration={configuration}
+                  onClose={handleClose}
+                />
 
                 <div className="conversation-list-view-content">
                   <ConversationList
@@ -193,35 +188,13 @@ export function WebchatWithConversations({
             {/* Chat View - Show current conversation */}
             {currentView === 'chat' && (
               <div className="chat-view">
-                <div className="chat-view-header">
-                  {enableConversationList && (
-                    <button
-                      className="back-button"
-                      onClick={handleBackToList}
-                      aria-label="Back to conversations"
-                    >
-                      <ChevronLeft size={16} />
-                    </button>
-                  )}
-                  <div className="chat-view-header-content">
-                    {configuration.botAvatar && (
-                      <img src={configuration.botAvatar} alt={configuration.botName || 'Bot'} className="bot-avatar" />
-                    )}
-                    <div className="bot-info">
-                      <h2>{configuration.botName || 'Bot'}</h2>
-                      {configuration.botDescription && (
-                        <p className="bot-description">{configuration.botDescription}</p>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    className="close-button"
-                    onClick={handleClose}
-                    aria-label="Close"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
+                <UnifiedHeader
+                  variant="chat"
+                  configuration={configuration}
+                  onClose={handleClose}
+                  onBack={handleBackToList}
+                  showBackButton={enableConversationList}
+                />
 
                 {webchat.clientState === 'connecting' && (
                   <div className="chat-view-loading">

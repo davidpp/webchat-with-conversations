@@ -1,5 +1,6 @@
 .conversation-item {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: var(--bpSpacing-3_5) var(--bpSpacing-4);
   cursor: pointer;
   border-bottom: 1px solid var(--bpGray-100);
@@ -31,6 +32,25 @@
   display: flex;
   flex-direction: column;
   gap: var(--bpSpacing-1_5);
+  flex: 1;
+  min-width: 0;
+}
+
+.conversation-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bpGray-400);
+  flex-shrink: 0;
+  margin-left: var(--bpSpacing-2);
+}
+
+.conversation-item:hover .conversation-chevron {
+  color: var(--bpGray-600);
+}
+
+.conversation-item.active .conversation-chevron {
+  color: var(--bpPrimary-600);
 }
 
 .conversation-preview {
