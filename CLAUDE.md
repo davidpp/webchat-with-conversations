@@ -9,10 +9,11 @@ This is a **standalone React application** that extends the official Botpress we
 ### Purpose
 
 Add conversation management UI to Botpress webchat, allowing users to:
-- View all their conversations in a sidebar
-- Switch between conversations
+- View all their conversations in a dedicated view (NOT a sidebar)
+- Switch between conversations seamlessly
 - Create new conversations
 - See message previews for each conversation
+- Navigate between list and chat views with back button
 
 ## Architecture
 
@@ -61,20 +62,21 @@ For understanding the underlying webchat API and components:
 webchat-with-conversations/
 ├── src/
 │   ├── components/
-│   │   ├── ConversationItem.tsx         # Individual list item
-│   │   ├── ConversationList.tsx         # List container
-│   │   ├── ConversationListPanel.tsx    # Sidebar wrapper
-│   │   └── WebchatWithConversations.tsx # Main component (wraps @botpress/webchat)
+│   │   ├── ConversationItem.tsx         # Individual list item (NO avatars)
+│   │   ├── ConversationList.tsx         # List container with pagination
+│   │   └── WebchatWithConversations.tsx # Main component with view switching
 │   ├── hooks/
 │   │   └── useConversationList.ts       # Manages conversation list state
 │   ├── types/
 │   │   └── conversation.ts              # TypeScript interfaces
-│   └── App.tsx                          # Demo application
+│   └── App.tsx                          # Demo application with configuration
 ├── .env.example                         # Environment template
 ├── README.md                            # User documentation
 ├── DELIVERY_NOTES.md                    # Client delivery guide
 └── CLAUDE.md                            # This file
 ```
+
+**Note**: ConversationListPanel.tsx was removed - we use view switching instead of a sidebar.
 
 ## Key Design Decisions
 
@@ -97,10 +99,9 @@ webchat-with-conversations/
 ### What We Built
 
 **Custom Components** (NOT in @botpress/webchat):
-- `ConversationItem` - Displays individual conversation with preview
-- `ConversationList` - Container with pagination
-- `ConversationListPanel` - Collapsible sidebar
-- `WebchatWithConversations` - Wrapper that orchestrates everything
+- `ConversationItem` - Displays individual conversation with preview (no avatars)
+- `ConversationList` - Container with pagination and empty states
+- `WebchatWithConversations` - Main orchestrator with view switching logic
 
 **Custom Hook**:
 - `useConversationList` - Fetches conversations and previews using `@botpress/webchat-client`
@@ -110,13 +111,75 @@ webchat-with-conversations/
 **From @botpress/webchat**:
 - `useWebchat` hook - Manages active conversation
 - `Configuration` type - Configuration object
-- All UI components (MessageList, Composer, etc.)
+- `StylesheetProvider` - Handles theme and font loading
+- `Fab` component - Floating action button
+- `MessageList`, `Composer` - Chat UI components
+- `enrichMessage` utility - Message formatting
 
 **From @botpress/webchat-client**:
 - `createClient()` - HTTP client factory
 - `listConversations()` - Fetch conversation list
 - `listConversationMessages()` - Fetch message previews
 - `createConversation()` - Create new conversation
+
+## UX Flow
+
+### View Switching Architecture
+
+The app uses a **two-view system** (NOT a sidebar):
+1. **List View**: Shows all conversations
+2. **Chat View**: Shows active conversation with back button
+
+```typescript
+type View = 'list' | 'chat'
+
+// FAB click behavior:
+if (conversationCount === 0) {
+  createNewConversation() // Auto-create if none exist
+} else {
+  openLatestConversation() // Go directly to chat, never list first
+}
+```
+
+**Key UX Decisions**:
+- FAB always opens chat view (never list)
+- Back button in header (integrated, not floating)
+- List view completely replaces chat view when navigating
+- Seamless transitions between views
+
+## Theme System
+
+### Using Botpress Design System
+
+The project fully integrates with Botpress's theme system:
+
+```typescript
+// StylesheetProvider from @botpress/webchat handles:
+// 1. Google Font loading
+// 2. CSS variable generation
+// 3. Theme mode (light/dark) support
+
+<StylesheetProvider {...themeProps} />
+<div className="webchat-modal bpReset"> // bpReset applies font family
+```
+
+### CSS Variables Used
+
+**Color Palette**:
+- `--bpPrimary-50` to `--bpPrimary-900` - Primary colors
+- `--bpGray-50` to `--bpGray-900` - Gray scale
+- `--bpError` - Error states
+
+**Spacing System**:
+- `--bpSpacing-1` to `--bpSpacing-96` - Consistent spacing
+
+**Border Radius**:
+- `--bpRadius-sm/md/lg/xl/2xl/3xl/full` - Radius sizes
+- `--bpRadius-scale` - Configuration multiplier
+
+**Semantic Variables**:
+- `--send-button-bg/text` - Button theming
+- `--header-bg/title` - Header theming
 
 ## API Usage Patterns
 
@@ -183,7 +246,7 @@ From WEBCHAT_API_GUIDE.md, the `listConversations` API returns:
 - Use last message text as conversation "title"
 - Fetch last message separately for previews
 - Sort by `updatedAt` for most recent first
-- Generate avatar initials from message text
+- ~~Generate avatar initials from message text~~ (Removed - not useful for human-in-loop)
 
 ### Design Decisions
 
@@ -238,10 +301,15 @@ Check for breaking changes in:
 
 ### Add Custom Styling
 
+**IMPORTANT**: Always use Botpress CSS variables for consistency:
+- Use `--bpPrimary-*` and `--bpGray-*` for colors
+- Use `--bpSpacing-*` for padding/margins
+- Use `--bpRadius-*` with scale for border radius
+- Add `.bpReset` class to inherit font settings
+
 Modify CSS files:
 - `ConversationItem.css` - List item styles
 - `ConversationList.css` - List container styles
-- `ConversationListPanel.css` - Sidebar styles
 - `WebchatWithConversations.css` - Main layout
 
 ### Debug API Issues
@@ -329,6 +397,37 @@ npm install --save-dev @types/react @types/react-dom
 - **@botpress/webchat**: Latest from npm
 - **@botpress/webchat-client**: Latest from npm
 
+## Recent Changes (October 2025)
+
+### Architecture Changes
+- **Removed sidebar approach** - Now uses view switching (list ↔ chat)
+- **Removed avatars** - Not useful with human-in-loop integration
+- **FAB behavior change** - Always opens chat, never list first
+- **Theme integration** - Full Botpress design system adoption
+
+### Technical Improvements
+- **Added StylesheetProvider** - Automatic font loading and theming
+- **CSS Variables Migration** - All colors/spacing use Botpress variables
+- **Simplified font handling** - Using `.bpReset` class inheritance
+- **Icons fixed** - Using lucide-react with explicit dimensions
+
+### Known Issues
+- Bundle size warning (655KB) - Consider code splitting if needed
+- Preview fetching limited to 5 conversations for performance
+- No remote git repository configured (local-only)
+
+## Important Notes for New Agents
+
+1. **DO NOT** modify files in `/Users/davidpaquet/Projects/botpress/` - different project
+2. **DO NOT** add features requiring backend API changes
+3. **DO NOT** reintroduce avatars - already removed as unnecessary
+4. **DO NOT** change to sidebar layout - view switching is intentional
+
+5. **DO** use Botpress CSS variables for all styling
+6. **DO** test with real Botpress bot before delivery
+7. **DO** follow the established view-switching UX pattern
+8. **DO** use existing @botpress/webchat components when possible
+
 ## Questions?
 
 When Claude needs help with this project:
@@ -340,5 +439,5 @@ When Claude needs help with this project:
 
 ---
 
-**Last Updated**: 2025-10-20
+**Last Updated**: 2025-10-21
 **Maintainer**: For client delivery and customization

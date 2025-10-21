@@ -1,0 +1,109 @@
+.init-form-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: var(--bpSpacing-4);
+}
+
+.init-form {
+  background: white;
+  border-radius: var(--bpRadius-xl);
+  padding: var(--bpSpacing-10);
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.init-form h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 0 0 var(--bpSpacing-2) 0;
+  color: var(--bpGray-900);
+}
+
+.init-form p {
+  color: var(--bpGray-600);
+  margin: 0 0 var(--bpSpacing-8) 0;
+}
+
+.form-group {
+  margin-bottom: var(--bpSpacing-6);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--bpSpacing-2);
+  font-weight: 500;
+  color: var(--bpGray-800);
+  font-size: 0.875rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: var(--bpSpacing-3);
+  border: 1px solid var(--bpGray-200);
+  border-radius: var(--bpRadius-lg);
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--bpPrimary-500);
+  box-shadow: 0 0 0 3px rgba(50, 118, 234, 0.1);
+}
+
+.form-group input:disabled {
+  background-color: var(--bpGray-50);
+  cursor: not-allowed;
+}
+
+.form-group small {
+  display: block;
+  margin-top: var(--bpSpacing-2);
+  font-size: 0.75rem;
+  color: var(--bpGray-600);
+  line-height: 1.5;
+}
+
+.form-group code {
+  background-color: var(--bpGray-100);
+  padding: 2px 4px;
+  border-radius: var(--bpRadius-sm);
+  font-family: monospace;
+  font-size: 0.75rem;
+}
+
+.error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: var(--bpRadius-lg);
+  padding: var(--bpSpacing-3);
+  margin-bottom: var(--bpSpacing-4);
+  color: #c00;
+  font-size: 0.875rem;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: var(--bpSpacing-3);
+  background-color: var(--bpPrimary-600);
+  color: white;
+  border: none;
+  border-radius: var(--bpRadius-lg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  background-color: var(--bpPrimary-700);
+}
+
+button[type="submit"]:disabled {
+  background-color: var(--bpGray-300);
+  cursor: not-allowed;
+}
