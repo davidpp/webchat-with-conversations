@@ -8,7 +8,7 @@ import './App.css'
 const DEFAULT_CONFIGURATION: Configuration = {
   botName: 'Assistant',
   botDescription: 'Ask AI a question about the documentation.',
-  botAvatar: 'https://files.bpcontent.cloud/2025/06/16/20/20250616204038-BRUW6C2R.svg',
+  botAvatar: 'https://via.placeholder.com/150',
   composerPlaceholder: 'Ask a question...',
   color: '#0588F0',
   variant: 'solid',

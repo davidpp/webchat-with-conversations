@@ -116,7 +116,7 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
       const defaultConfig: Configuration = {
         botName: 'Botpress Assistant',
         botDescription: 'Ask AI a question about the documentation.',
-        botAvatar: 'https://files.bpcontent.cloud/2025/06/16/20/20250616204038-BRUW6C2R.svg',
+        botAvatar: 'https://via.placeholder.com/150',
         composerPlaceholder: 'Ask a question...',
         color: '#0588F0',
         variant: 'solid',
@@ -153,7 +153,7 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
               <br />
               • Client ID: <code>f0119422-b733-4b07-8cf5-b23e84305127</code>
               <br />
-              • Script URL: <code>https://files.bpcontent.cloud/2025/10/20/21/20251020211011-0T1QYFJQ.js</code>
+              • Script URL: <code>https://files.bpcontent.cloud/YYYY/MM/DD/HH/YYYYMMDDHHMMSS-XXXXXXXX.js</code>
             </small>
           </div>
 
