@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useWebchat, type Configuration, Fab, MessageList, Composer, enrichMessage } from '@botpress/webchat'
+import { useWebchat, type Configuration, Fab, MessageList, Composer, enrichMessage, StylesheetProvider } from '@botpress/webchat'
 import { ChevronLeft, X } from 'lucide-react'
 import { ConversationList } from './ConversationList'
 import { useConversationList } from '../hooks/useConversationList'
@@ -113,8 +113,22 @@ export function WebchatWithConversations({
     setIsOpen(true)
   }
 
+  // Extract theme props for StylesheetProvider
+  const themeProps = {
+    color: configuration.color,
+    fontFamily: configuration.fontFamily,
+    radius: configuration.radius,
+    themeMode: configuration.themeMode,
+    variant: configuration.variant,
+    headerVariant: configuration.headerVariant,
+    additionalStylesheetUrl: configuration.additionalStylesheetUrl,
+  }
+
   return (
     <>
+      {/* Apply theme styles globally for conversation list */}
+      <StylesheetProvider {...themeProps} />
+
       {/* FAB button in bottom-right corner */}
       {!isOpen && (
         <div className="webchat-fab-container">
@@ -125,7 +139,7 @@ export function WebchatWithConversations({
       {/* Webchat modal/window */}
       {isOpen && (
         <div className="webchat-modal-container">
-          <div className="webchat-modal">
+          <div className="webchat-modal bpReset">
             {/* List View - Show all conversations */}
             {currentView === 'list' && enableConversationList && (
               <div className="conversation-list-view">

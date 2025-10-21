@@ -22,14 +22,7 @@ function getRelativeTime(dateString: string): string {
   return date.toLocaleDateString()
 }
 
-function getInitial(text?: string): string {
-  if (!text) return 'C'
-  const firstWord = text.trim().split(' ')[0]
-  return firstWord[0]?.toUpperCase() || 'C'
-}
-
 export function ConversationItem({ conversation, isActive, onClick }: ConversationItemProps) {
-  const initial = getInitial(conversation.lastMessage?.text)
   const previewText = conversation.lastMessage?.text
     ? conversation.lastMessage.text.slice(0, 50) + (conversation.lastMessage.text.length > 50 ? '...' : '')
     : 'New conversation'
@@ -40,10 +33,11 @@ export function ConversationItem({ conversation, isActive, onClick }: Conversati
       className={`conversation-item ${isActive ? 'active' : ''}`}
       onClick={onClick}
     >
-      <div className="conversation-avatar">{initial}</div>
       <div className="conversation-content">
         <div className="conversation-preview">{previewText}</div>
-        <div className="conversation-time">{timeAgo}</div>
+        <div className="conversation-meta">
+          <span className="conversation-time">{timeAgo}</span>
+        </div>
       </div>
     </div>
   )
