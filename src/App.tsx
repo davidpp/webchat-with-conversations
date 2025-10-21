@@ -40,7 +40,22 @@ function App() {
         const isFullQueryUrl = fullQuery.startsWith('http://') || fullQuery.startsWith('https://')
 
         if (scriptUrl || isFullQueryUrl) {
-          const url = scriptUrl || fullQuery
+          let url = scriptUrl || fullQuery
+
+          // Log for debugging
+          console.log('Script URL detection:', {
+            scriptUrl,
+            fullQuery,
+            isFullQueryUrl,
+            finalUrl: url,
+            windowLocation: window.location.href
+          })
+
+          // Ensure the URL is absolute, not relative
+          if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            throw new Error('Invalid script URL: must be an absolute URL starting with http:// or https://')
+          }
+
           // Fetch and parse the script
           const response = await fetch(url)
           if (!response.ok) {
