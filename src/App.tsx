@@ -129,14 +129,20 @@ function App() {
     }
   }
 
-  const handleInitialize = (newClientId: string, newConfiguration: Configuration) => {
+  const handleInitialize = (newClientId: string, newConfiguration: Configuration, scriptUrl?: string) => {
     setClientId(newClientId)
     setConfiguration(newConfiguration)
 
     // Update URL to reflect the current state (for sharing)
     if (window.history.replaceState) {
       const url = new URL(window.location.href)
-      url.searchParams.set('clientId', newClientId)
+      if (scriptUrl) {
+        // Keep the script URL so configuration can be reloaded
+        url.search = '?' + scriptUrl
+      } else {
+        // Just keep the clientId for simple cases
+        url.searchParams.set('clientId', newClientId)
+      }
       window.history.replaceState({}, '', url)
     }
   }

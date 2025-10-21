@@ -3,7 +3,7 @@ import { type Configuration } from '@botpress/webchat'
 import './InitializationForm.css'
 
 interface InitializationFormProps {
-  onInitialize: (clientId: string, configuration: Configuration) => void
+  onInitialize: (clientId: string, configuration: Configuration, scriptUrl?: string) => void
 }
 
 export function InitializationForm({ onInitialize }: InitializationFormProps) {
@@ -92,7 +92,7 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
         const config = extractConfigFromScript(scriptContent)
 
         if (config) {
-          onInitialize(config.clientId, config.configuration)
+          onInitialize(config.clientId, config.configuration, inputValue)
         }
       } else {
         // Treat as client ID
