@@ -22,6 +22,16 @@
   overflow: hidden;
 }
 
+.embedded-chat-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 60rem; /* ~960px, similar to ChatGPT */
+  margin: 0 auto;
+  overflow: hidden;
+}
+
 .embedded-messages {
   flex: 1;
   overflow-y: auto;

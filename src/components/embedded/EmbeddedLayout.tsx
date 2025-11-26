@@ -172,7 +172,7 @@ export function EmbeddedLayout({
             )}
 
             {webchat.clientState === 'connected' && webchat.user && (
-              <>
+              <div className="embedded-chat-content">
                 <div className="embedded-messages">
                   <MessageList
                     messages={enrichedMessages}
@@ -192,7 +192,7 @@ export function EmbeddedLayout({
                     connected={true}
                   />
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
