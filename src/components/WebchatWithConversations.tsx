@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useWebchat, type Configuration, Fab, MessageList, Composer, enrichMessage, StylesheetProvider } from '@botpress/webchat'
-import ReactMarkdown from 'react-markdown'
 import { ConversationList } from './ConversationList'
 import { UnifiedHeader } from './UnifiedHeader'
 import { useConversationList } from '../hooks/useConversationList'
@@ -171,17 +170,6 @@ export function WebchatWithConversations({
                   </button>
                 </div>
 
-                {configuration.footer && (
-                  <ReactMarkdown
-                    components={{
-                      a: ({ node, ...props }) => <a {...props} target="_blank" rel="noreferrer noopener" />,
-                    }}
-                    allowedElements={['a', 'strong', 'code', 'em', 'p', 'span']}
-                    className="bpComposerFooter"
-                  >
-                    {configuration.footer}
-                  </ReactMarkdown>
-                )}
               </div>
             )}
 

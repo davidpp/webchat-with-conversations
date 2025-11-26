@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { type Configuration } from '@botpress/webchat'
+import { extractConfigFromScript } from '../utils/configParser'
 import './InitializationForm.css'
 
 interface InitializationFormProps {
-  onInitialize: (clientId: string, configuration: Configuration, scriptUrl?: string) => void
+  onInitialize: (clientId: string, configuration: Configuration, scriptUrl?: string, embedded?: boolean) => void
 }
 
 export function InitializationForm({ onInitialize }: InitializationFormProps) {
   const [inputValue, setInputValue] = useState('')
+  const [embedded, setEmbedded] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -17,55 +19,6 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
       return true
     } catch {
       return false
-    }
-  }
-
-  const extractConfigFromScript = (scriptContent: string): { clientId: string; configuration: Configuration } | null => {
-    try {
-      // Extract the window.botpress.init() call - more flexible regex
-      const initMatch = scriptContent.match(/window\.botpress\.init\s*\(\s*(\{[\s\S]*?\})\s*\)/);
-      if (!initMatch) {
-        throw new Error('Could not find window.botpress.init() in script')
-      }
-
-      // Use Function constructor to safely evaluate the object literal
-      // This handles JS object notation better than regex replacement
-      let config: any
-      try {
-        // Wrap in parentheses to make it an expression
-        const evalCode = `(${initMatch[1]})`
-        // Create a sandboxed function to evaluate the object
-        const fn = new Function('return ' + evalCode)
-        config = fn()
-      } catch (evalError) {
-        // Fallback to regex-based parsing if evaluation fails
-        console.warn('Direct evaluation failed, trying regex parsing:', evalError)
-
-        const configStr = initMatch[1]
-          // Handle unquoted keys
-          .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":')
-          // Handle single quotes in values
-          .replace(/:\s*'([^']*)'/g, ': "$1"')
-          // Handle trailing commas
-          .replace(/,\s*}/g, '}')
-          .replace(/,\s*]/g, ']')
-          // Escape special characters in strings
-          .replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
-
-        config = JSON.parse(configStr)
-      }
-
-      if (!config.clientId) {
-        throw new Error('No clientId found in configuration')
-      }
-
-      return {
-        clientId: config.clientId,
-        configuration: config.configuration || {}
-      }
-    } catch (err) {
-      console.error('Failed to parse script:', err)
-      throw new Error(`Failed to parse Botpress script: ${err instanceof Error ? err.message : 'Unknown error'}`)
     }
   }
 
@@ -92,7 +45,7 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
         const config = extractConfigFromScript(scriptContent)
 
         if (config) {
-          onInitialize(config.clientId, config.configuration, inputValue)
+          onInitialize(config.clientId, config.configuration, inputValue, embedded)
         }
       } else {
         // Treat as client ID
@@ -100,7 +53,7 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
           botName: 'Assistant',
           composerPlaceholder: 'Type a message...',
         }
-        onInitialize(inputValue.trim(), defaultConfig)
+        onInitialize(inputValue.trim(), defaultConfig, undefined, embedded)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
@@ -125,7 +78,7 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
         fontFamily: 'inter',
         radius: 3,
       }
-      onInitialize(envClientId, defaultConfig)
+      onInitialize(envClientId, defaultConfig, undefined, embedded)
     } else {
       setError('No default client ID configured in environment')
     }
@@ -155,6 +108,19 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
               <br />
               • Script URL: <code>https://files.bpcontent.cloud/YYYY/MM/DD/HH/YYYYMMDDHHMMSS-XXXXXXXX.js</code>
             </small>
+          </div>
+
+          <div className="form-group checkbox-group">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={embedded}
+                onChange={(e) => setEmbedded(e.target.checked)}
+                disabled={loading}
+              />
+              <span>Embedded mode</span>
+            </label>
+            <small>Full-page chat with collapsible sidebar (like ChatGPT)</small>
           </div>
 
           {error && (
