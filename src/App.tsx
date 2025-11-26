@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react'
 import { WebchatWithConversations } from './components/WebchatWithConversations'
+import { EmbeddedLayout } from './components/embedded'
 import { InitializationForm } from './components/InitializationForm'
+import { extractConfigFromScript } from './utils/configParser'
 import type { Configuration } from '@botpress/webchat'
 import './App.css'
+
+type DisplayMode = 'fab' | 'embedded'
 
 // Default configuration for fallback
 const DEFAULT_CONFIGURATION: Configuration = {
@@ -23,6 +27,7 @@ const DEFAULT_CONFIGURATION: Configuration = {
 function App() {
   const [clientId, setClientId] = useState<string | null>(null)
   const [configuration, setConfiguration] = useState<Configuration>(DEFAULT_CONFIGURATION)
+  const [mode, setMode] = useState<DisplayMode>('fab')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -30,10 +35,35 @@ function App() {
   useEffect(() => {
     const checkUrlParams = async () => {
       try {
+        // Hardcoded routes
+        const path = window.location.pathname
+        if (path === '/ledvance') {
+          const scriptUrl = 'https://files.bpcontent.cloud/2025/10/02/07/20251002074359-QIWP7U83.js'
+          const response = await fetch(scriptUrl)
+          if (!response.ok) {
+            throw new Error(`Failed to fetch script: ${response.statusText}`)
+          }
+          const scriptContent = await response.text()
+          const config = extractConfigFromScript(scriptContent)
+          if (config) {
+            setClientId(config.clientId)
+            setConfiguration({ ...DEFAULT_CONFIGURATION, ...config.configuration })
+            setMode('embedded')
+          }
+          setLoading(false)
+          return
+        }
+
         // Check for script URL in query params (e.g., ?script=https://...)
         const urlParams = new URLSearchParams(window.location.search)
         const scriptUrl = urlParams.get('script')
         const directClientId = urlParams.get('clientId')
+        const modeParam = urlParams.get('mode') as DisplayMode | null
+
+        // Set display mode (fab is default)
+        if (modeParam === 'embedded') {
+          setMode('embedded')
+        }
 
         // Also check if the entire path after ? is a URL (e.g., ?https://files.bpcontent.cloud/...)
         const fullQuery = window.location.search.slice(1) // Remove the ?
@@ -52,7 +82,7 @@ function App() {
 
           if (config) {
             setClientId(config.clientId)
-            setConfiguration(config.configuration)
+            setConfiguration({ ...DEFAULT_CONFIGURATION, ...config.configuration })
           }
         } else if (directClientId) {
           // Use client ID from URL
@@ -72,66 +102,12 @@ function App() {
     checkUrlParams()
   }, [])
 
-  const extractConfigFromScript = (scriptContent: string): { clientId: string; configuration: Configuration } | null => {
-    try {
-      // Extract the window.botpress.init() call - more flexible regex
-      const initMatch = scriptContent.match(/window\.botpress\.init\s*\(\s*(\{[\s\S]*?\})\s*\)/);
-      if (!initMatch) {
-        throw new Error('Could not find window.botpress.init() in script')
-      }
-
-      // Use Function constructor to safely evaluate the object literal
-      // This handles JS object notation better than regex replacement
-      let config: any
-      try {
-        // Wrap in parentheses to make it an expression
-        const evalCode = `(${initMatch[1]})`
-        // Create a sandboxed function to evaluate the object
-        const fn = new Function('return ' + evalCode)
-        config = fn()
-      } catch (evalError) {
-        // Fallback to regex-based parsing if evaluation fails
-        console.warn('Direct evaluation failed, trying regex parsing:', evalError)
-
-        const configStr = initMatch[1]
-          // Handle unquoted keys
-          .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":')
-          // Handle single quotes in values
-          .replace(/:\s*'([^']*)'/g, ': "$1"')
-          // Handle trailing commas
-          .replace(/,\s*}/g, '}')
-          .replace(/,\s*]/g, ']')
-          // Escape special characters in strings
-          .replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
-
-        config = JSON.parse(configStr)
-      }
-
-      if (!config.clientId) {
-        throw new Error('No clientId found in configuration')
-      }
-
-      // Extract botId if present (some scripts use botId instead of clientId in config)
-      const botId = config.botId || config.configuration?.botId
-
-      return {
-        clientId: config.clientId,
-        configuration: {
-          ...DEFAULT_CONFIGURATION,
-          ...config.configuration,
-          ...(botId && { botId })
-        }
-      }
-    } catch (err) {
-      console.error('Failed to parse script:', err)
-      console.error('Script content:', scriptContent.substring(0, 500))
-      throw new Error(`Failed to parse Botpress script: ${err instanceof Error ? err.message : 'Unknown error'}`)
-    }
-  }
-
-  const handleInitialize = (newClientId: string, newConfiguration: Configuration, scriptUrl?: string) => {
+  const handleInitialize = (newClientId: string, newConfiguration: Configuration, scriptUrl?: string, embedded?: boolean) => {
     setClientId(newClientId)
     setConfiguration(newConfiguration)
+    if (embedded) {
+      setMode('embedded')
+    }
 
     // Update URL to reflect the current state (for sharing)
     if (window.history.replaceState) {
@@ -139,9 +115,15 @@ function App() {
       if (scriptUrl) {
         // Keep the script URL so configuration can be reloaded
         url.search = '?' + scriptUrl
+        if (embedded) {
+          url.searchParams.set('mode', 'embedded')
+        }
       } else {
         // Just keep the clientId for simple cases
         url.searchParams.set('clientId', newClientId)
+        if (embedded) {
+          url.searchParams.set('mode', 'embedded')
+        }
       }
       window.history.replaceState({}, '', url)
     }
@@ -197,6 +179,18 @@ function App() {
     return <InitializationForm onInitialize={handleInitialize} />
   }
 
+  // Route based on display mode
+  if (mode === 'embedded') {
+    return (
+      <EmbeddedLayout
+        clientId={clientId}
+        configuration={configuration}
+        storageKey={`webchat-${clientId}`}
+      />
+    )
+  }
+
+  // Default: FAB mode
   return (
     <WebchatWithConversations
       clientId={clientId}
