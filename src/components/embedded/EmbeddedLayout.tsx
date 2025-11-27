@@ -1,9 +1,40 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useWebchat, type Configuration, MessageList, Composer, enrichMessage, StylesheetProvider } from '@botpress/webchat'
 import { EmbeddedSidebar } from './EmbeddedSidebar'
 import { EmbeddedHeader } from './EmbeddedHeader'
 import { useConversationList } from '../../hooks/useConversationList'
+import { useTranslation } from '../../i18n'
 import './EmbeddedLayout.css'
+
+// Translate webchat internal date strings via DOM manipulation
+function useWebchatDateTranslation(containerRef: React.RefObject<HTMLDivElement | null>, t: (key: 'date-today' | 'date-yesterday') => string) {
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const translateDates = () => {
+      const systemMessages = containerRef.current?.querySelectorAll('.bpMessageContainer[data-direction="system"]')
+      systemMessages?.forEach((el) => {
+        const textEl = el.querySelector('.bpTextBlockText')
+        if (textEl && textEl.textContent) {
+          if (textEl.textContent === 'Today') {
+            textEl.textContent = t('date-today')
+          } else if (textEl.textContent === 'Yesterday') {
+            textEl.textContent = t('date-yesterday')
+          }
+        }
+      })
+    }
+
+    // Initial translation
+    translateDates()
+
+    // Watch for new messages
+    const observer = new MutationObserver(translateDates)
+    observer.observe(containerRef.current, { childList: true, subtree: true })
+
+    return () => observer.disconnect()
+  }, [containerRef, t])
+}
 
 interface EmbeddedLayoutProps {
   clientId: string
@@ -18,10 +49,15 @@ export function EmbeddedLayout({
   configuration,
   storageKey,
 }: EmbeddedLayoutProps) {
+  const { t } = useTranslation()
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [currentConversationId, setCurrentConversationId] = useState<string>()
   const [isSmallScreen, setIsSmallScreen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
+
+  // Translate webchat internal date strings
+  useWebchatDateTranslation(chatContainerRef, t)
 
   // Initialize webchat for the current conversation
   const webchat = useWebchat({
@@ -160,19 +196,19 @@ export function EmbeddedLayout({
             {webchat.clientState === 'connecting' && (
               <div className="embedded-loading">
                 <div className="spinner" />
-                <p>Connecting...</p>
+                <p>{t('state-connecting')}</p>
               </div>
             )}
 
             {webchat.clientState === 'error' && (
               <div className="embedded-error">
-                <p>Failed to connect</p>
+                <p>{t('state-failed')}</p>
                 {webchat.error && <p className="error-message">{webchat.error.message}</p>}
               </div>
             )}
 
             {webchat.clientState === 'connected' && webchat.user && (
-              <div className="embedded-chat-content">
+              <div className="embedded-chat-content" ref={chatContainerRef}>
                 <div className="embedded-messages">
                   <MessageList
                     messages={enrichedMessages}
@@ -187,7 +223,7 @@ export function EmbeddedLayout({
                   <Composer
                     sendMessage={webchat.client.sendMessage}
                     uploadFile={webchat.client.uploadFile}
-                    composerPlaceholder={configuration.composerPlaceholder}
+                    composerPlaceholder={t('placeholder-composer')}
                     footer={configuration.footer}
                     connected={true}
                   />

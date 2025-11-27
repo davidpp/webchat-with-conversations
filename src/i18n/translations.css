@@ -1,0 +1,105 @@
+/**
+ * Default Translations (English)
+ *
+ * All translation strings are defined as CSS custom properties.
+ * Override by loading a stylesheet with :root[data-lang="xx"] selectors.
+ *
+ * CSS Variable Naming Convention:
+ * --t-{category}-{name}
+ *
+ * Categories:
+ * - btn: Buttons
+ * - header: Headers
+ * - label: Form labels
+ * - state: UI states
+ * - error: Error messages
+ * - time: Relative time (with interpolation)
+ * - group: Date groups
+ * - aria: Accessibility labels
+ * - placeholder: Input placeholders
+ */
+
+:root {
+  /* ============================================
+     BUTTONS
+     ============================================ */
+  --t-btn-new-conversation: '+ New Conversation';
+  --t-btn-new-short: 'New Conversation';
+  --t-btn-creating: 'Creating...';
+  --t-btn-load-more: 'Load More';
+  --t-btn-initialize: 'Initialize Webchat';
+  --t-btn-loading: 'Loading...';
+  --t-btn-load-default: 'Load Default Configuration';
+  --t-btn-reload: 'Reload Page';
+
+  /* ============================================
+     HEADERS / LABELS
+     ============================================ */
+  --t-header-conversations: 'Conversations';
+  --t-header-chat: 'Chat';
+  --t-label-client-id: 'Client ID or Script URL';
+  --t-label-embedded: 'Embedded mode';
+  --t-label-embedded-hint: 'Full-page chat with collapsible sidebar (like ChatGPT)';
+  --t-title-init: 'Initialize Webchat';
+  --t-subtitle-init: 'Enter a Botpress client ID or script URL to get started';
+  --t-label-or: 'or';
+  --t-label-examples: 'Examples:';
+  --t-label-client-id-example: 'Client ID:';
+  --t-label-script-url-example: 'Script URL:';
+
+  /* ============================================
+     STATES / MESSAGES
+     ============================================ */
+  --t-state-connecting: 'Connecting...';
+  --t-state-failed: 'Failed to connect';
+  --t-state-no-conversations: 'No conversations yet';
+  --t-state-empty-hint: 'Click "New Conversation" to start';
+  --t-state-loading: 'Loading...';
+  --t-state-loading-list: 'Loading conversations...';
+  --t-state-new-conversation: 'New conversation';
+
+  /* ============================================
+     ERRORS
+     ============================================ */
+  --t-error-no-input: 'Please enter a client ID or URL';
+  --t-error-no-config: 'No default client ID configured in environment';
+  --t-error-generic: 'An error occurred';
+
+  /* ============================================
+     TIME (with {n} interpolation)
+     ============================================ */
+  --t-time-just-now: 'Just now';
+  --t-time-mins: '{n}m ago';
+  --t-time-hours: '{n}h ago';
+  --t-time-days: '{n}d ago';
+
+  /* ============================================
+     DATE GROUPS
+     ============================================ */
+  --t-group-today: 'Today';
+  --t-group-week: 'This Week';
+  --t-group-month: 'This Month';
+  --t-group-older: 'Older';
+
+  /* ============================================
+     ARIA LABELS (accessibility)
+     ============================================ */
+  --t-aria-back: 'Back to conversations';
+  --t-aria-close: 'Close';
+  --t-aria-open-sidebar: 'Open sidebar';
+  --t-aria-close-sidebar: 'Close sidebar';
+  --t-aria-new-conversation: 'New conversation';
+  --t-aria-conversations: 'Conversations';
+
+  /* ============================================
+     PLACEHOLDERS
+     ============================================ */
+  --t-placeholder-input: 'e.g., abc123 or https://files.bpcontent.cloud/...';
+  --t-placeholder-composer: 'Ask a question...';
+
+  /* ============================================
+     WEBCHAT INTERNAL (CSS overrides)
+     ============================================ */
+  --t-date-today: 'Today';
+  --t-date-yesterday: 'Yesterday';
+}

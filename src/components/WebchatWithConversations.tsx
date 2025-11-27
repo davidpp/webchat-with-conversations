@@ -3,6 +3,7 @@ import { useWebchat, type Configuration, Fab, MessageList, Composer, enrichMessa
 import { ConversationList } from './ConversationList'
 import { UnifiedHeader } from './UnifiedHeader'
 import { useConversationList } from '../hooks/useConversationList'
+import { useTranslation } from '../i18n'
 import './WebchatWithConversations.css'
 
 interface WebchatWithConversationsProps {
@@ -22,6 +23,7 @@ export function WebchatWithConversations({
   storageKey,
   enableConversationList = true,
 }: WebchatWithConversationsProps) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [currentView, setCurrentView] = useState<View>('chat')
   const [currentConversationId, setCurrentConversationId] = useState<string>()
@@ -166,7 +168,7 @@ export function WebchatWithConversations({
                     onClick={handleCreateConversation}
                     disabled={isCreating}
                   >
-                    {isCreating ? 'Creating...' : '+ New Conversation'}
+                    {isCreating ? t('btn-creating') : t('btn-new-conversation')}
                   </button>
                 </div>
 
@@ -187,13 +189,13 @@ export function WebchatWithConversations({
                 {webchat.clientState === 'connecting' && (
                   <div className="chat-view-loading">
                     <div className="spinner" />
-                    <p>Connecting...</p>
+                    <p>{t('state-connecting')}</p>
                   </div>
                 )}
 
                 {webchat.clientState === 'error' && (
                   <div className="chat-view-error">
-                    <p>Failed to connect</p>
+                    <p>{t('state-failed')}</p>
                     {webchat.error && <p className="error-message">{webchat.error.message}</p>}
                   </div>
                 )}

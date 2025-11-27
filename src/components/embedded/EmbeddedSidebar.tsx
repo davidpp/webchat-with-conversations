@@ -2,11 +2,14 @@ import { useMemo } from 'react'
 import type { Configuration } from '@botpress/webchat'
 import { ConversationItem } from '../ConversationItem'
 import type { ConversationPreview } from '../../types/conversation'
+import { useTranslation } from '../../i18n'
 import { Plus } from 'lucide-react'
 import './EmbeddedSidebar.css'
 
+type DateGroupKey = 'group-today' | 'group-week' | 'group-month' | 'group-older'
+
 interface ConversationGroup {
-  title: string
+  key: DateGroupKey
   conversations: ConversationPreview[]
 }
 
@@ -35,21 +38,21 @@ function groupConversationsByDate(conversations: ConversationPreview[]): Convers
   const thirtyDaysAgo = new Date(today)
   thirtyDaysAgo.setDate(today.getDate() - 30)
 
-  const categories = [
+  const categories: { key: DateGroupKey; filter: (date: Date) => boolean }[] = [
     {
-      title: 'Today',
+      key: 'group-today',
       filter: (date: Date) => date > yesterday,
     },
     {
-      title: 'This Week',
+      key: 'group-week',
       filter: (date: Date) => date <= yesterday && date > sevenDaysAgo,
     },
     {
-      title: 'This Month',
+      key: 'group-month',
       filter: (date: Date) => date <= sevenDaysAgo && date > thirtyDaysAgo,
     },
     {
-      title: 'Older',
+      key: 'group-older',
       filter: (date: Date) => date < thirtyDaysAgo,
     },
   ]
@@ -62,7 +65,7 @@ function groupConversationsByDate(conversations: ConversationPreview[]): Convers
 
     if (categoryConversations.length > 0) {
       groups.push({
-        title: category.title,
+        key: category.key,
         conversations: categoryConversations,
       })
     }
@@ -83,6 +86,7 @@ export function EmbeddedSidebar({
   hasMore,
   onLoadMore,
 }: EmbeddedSidebarProps) {
+  const { t } = useTranslation()
   const groupedConversations = useMemo(
     () => groupConversationsByDate(conversations),
     [conversations]
@@ -114,20 +118,20 @@ export function EmbeddedSidebar({
         disabled={isCreating}
       >
         <Plus size={18} />
-        {isCreating ? 'Creating...' : 'New Conversation'}
+        {isCreating ? t('btn-creating') : t('btn-new-short')}
       </button>
 
       {/* Conversation list */}
       <div className="sidebar-conversations">
         {conversations.length === 0 && !isLoading && (
           <div className="sidebar-empty">
-            <p>No conversations yet</p>
+            <p>{t('state-no-conversations')}</p>
           </div>
         )}
 
         {groupedConversations.map((group) => (
-          <div key={group.title} className="conversation-group">
-            <div className="conversation-group-title">{group.title}</div>
+          <div key={group.key} className="conversation-group">
+            <div className="conversation-group-title">{t(group.key)}</div>
             {group.conversations.map((conv) => (
               <ConversationItem
                 key={conv.id}
@@ -147,7 +151,7 @@ export function EmbeddedSidebar({
 
         {hasMore && !isLoading && (
           <button className="load-more-btn" onClick={onLoadMore}>
-            Load more
+            {t('btn-load-more')}
           </button>
         )}
       </div>

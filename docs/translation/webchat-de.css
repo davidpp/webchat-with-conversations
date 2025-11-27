@@ -1,0 +1,99 @@
+/**
+ * German (Deutsch) Translations
+ *
+ * Usage:
+ * 1. Include this stylesheet after the main app styles
+ * 2. Set the lang attribute: document.documentElement.setAttribute('data-lang', 'de')
+ *
+ * Or load dynamically:
+ *   const link = document.createElement('link');
+ *   link.rel = 'stylesheet';
+ *   link.href = '/translations/webchat-de.css';
+ *   document.head.appendChild(link);
+ *   document.documentElement.setAttribute('data-lang', 'de');
+ */
+
+:root[data-lang="de"] {
+  /* ============================================
+     BUTTONS
+     ============================================ */
+  --t-btn-new-conversation: '+ Neue Unterhaltung';
+  --t-btn-new-short: 'Neue Unterhaltung';
+  --t-btn-creating: 'Wird erstellt...';
+  --t-btn-load-more: 'Mehr laden';
+  --t-btn-initialize: 'Webchat starten';
+  --t-btn-loading: 'Laden...';
+  --t-btn-load-default: 'Standardkonfiguration laden';
+  --t-btn-reload: 'Seite neu laden';
+
+  /* ============================================
+     HEADERS / LABELS
+     ============================================ */
+  --t-header-conversations: 'Unterhaltungen';
+  --t-header-chat: 'Chat';
+  --t-label-client-id: 'Client-ID oder Skript-URL';
+  --t-label-embedded: 'Eingebetteter Modus';
+  --t-label-embedded-hint: 'Vollbild-Chat mit einklappbarer Seitenleiste (wie ChatGPT)';
+  --t-title-init: 'Webchat initialisieren';
+  --t-subtitle-init: 'Geben Sie eine Botpress Client-ID oder Skript-URL ein, um zu starten';
+  --t-label-or: 'oder';
+  --t-label-examples: 'Beispiele:';
+  --t-label-client-id-example: 'Client-ID:';
+  --t-label-script-url-example: 'Skript-URL:';
+
+  /* ============================================
+     STATES / MESSAGES
+     ============================================ */
+  --t-state-connecting: 'Verbindung wird hergestellt...';
+  --t-state-failed: 'Verbindung fehlgeschlagen';
+  --t-state-no-conversations: 'Noch keine Unterhaltungen';
+  --t-state-empty-hint: 'Klicken Sie auf „Neue Unterhaltung", um zu starten';
+  --t-state-loading: 'Laden...';
+  --t-state-loading-list: 'Unterhaltungen werden geladen...';
+  --t-state-new-conversation: 'Neue Unterhaltung';
+
+  /* ============================================
+     ERRORS
+     ============================================ */
+  --t-error-no-input: 'Bitte geben Sie eine Client-ID oder URL ein';
+  --t-error-no-config: 'Keine Standard-Client-ID in der Umgebung konfiguriert';
+  --t-error-generic: 'Ein Fehler ist aufgetreten';
+
+  /* ============================================
+     TIME (with {n} interpolation)
+     ============================================ */
+  --t-time-just-now: 'Gerade eben';
+  --t-time-mins: 'vor {n} Min.';
+  --t-time-hours: 'vor {n} Std.';
+  --t-time-days: 'vor {n} T.';
+
+  /* ============================================
+     DATE GROUPS
+     ============================================ */
+  --t-group-today: 'Heute';
+  --t-group-week: 'Diese Woche';
+  --t-group-month: 'Diesen Monat';
+  --t-group-older: 'Älter';
+
+  /* ============================================
+     ARIA LABELS (accessibility)
+     ============================================ */
+  --t-aria-back: 'Zurück zu Unterhaltungen';
+  --t-aria-close: 'Schließen';
+  --t-aria-open-sidebar: 'Seitenleiste öffnen';
+  --t-aria-close-sidebar: 'Seitenleiste schließen';
+  --t-aria-new-conversation: 'Neue Unterhaltung';
+  --t-aria-conversations: 'Unterhaltungen';
+
+  /* ============================================
+     PLACEHOLDERS
+     ============================================ */
+  --t-placeholder-input: 'z.B. abc123 oder https://files.bpcontent.cloud/...';
+  --t-placeholder-composer: 'Stellen Sie eine Frage...';
+
+  /* ============================================
+     WEBCHAT INTERNAL (CSS overrides)
+     ============================================ */
+  --t-date-today: 'Heute';
+  --t-date-yesterday: 'Gestern';
+}

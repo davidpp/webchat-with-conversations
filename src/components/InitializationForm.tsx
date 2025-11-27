@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { type Configuration } from '@botpress/webchat'
 import { extractConfigFromScript } from '../utils/configParser'
+import { useTranslation } from '../i18n'
 import './InitializationForm.css'
 
 interface InitializationFormProps {
@@ -8,6 +9,7 @@ interface InitializationFormProps {
 }
 
 export function InitializationForm({ onInitialize }: InitializationFormProps) {
+  const { t } = useTranslation()
   const [inputValue, setInputValue] = useState('')
   const [embedded, setEmbedded] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -27,7 +29,7 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
     setError(null)
 
     if (!inputValue.trim()) {
-      setError('Please enter a client ID or URL')
+      setError(t('error-no-input'))
       return
     }
 
@@ -80,33 +82,33 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
       }
       onInitialize(envClientId, defaultConfig, undefined, embedded)
     } else {
-      setError('No default client ID configured in environment')
+      setError(t('error-no-config'))
     }
   }
 
   return (
     <div className="init-form-container">
       <div className="init-form">
-        <h1>Initialize Webchat</h1>
-        <p>Enter a Botpress client ID or script URL to get started</p>
+        <h1>{t('title-init')}</h1>
+        <p>{t('subtitle-init')}</p>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="input">Client ID or Script URL</label>
+            <label htmlFor="input">{t('label-client-id')}</label>
             <input
               id="input"
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="e.g., abc123 or https://files.bpcontent.cloud/..."
+              placeholder={t('placeholder-input')}
               disabled={loading}
             />
             <small>
-              Examples:
+              {t('label-examples')}
               <br />
-              • Client ID: <code>f0119422-b733-4b07-8cf5-b23e84305127</code>
+              • {t('label-client-id-example')} <code>f0119422-b733-4b07-8cf5-b23e84305127</code>
               <br />
-              • Script URL: <code>https://files.bpcontent.cloud/YYYY/MM/DD/HH/YYYYMMDDHHMMSS-XXXXXXXX.js</code>
+              • {t('label-script-url-example')} <code>https://files.bpcontent.cloud/YYYY/MM/DD/HH/YYYYMMDDHHMMSS-XXXXXXXX.js</code>
             </small>
           </div>
 
@@ -118,9 +120,9 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
                 onChange={(e) => setEmbedded(e.target.checked)}
                 disabled={loading}
               />
-              <span>Embedded mode</span>
+              <span>{t('label-embedded')}</span>
             </label>
-            <small>Full-page chat with collapsible sidebar (like ChatGPT)</small>
+            <small>{t('label-embedded-hint')}</small>
           </div>
 
           {error && (
@@ -130,13 +132,13 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
           )}
 
           <button type="submit" disabled={loading}>
-            {loading ? 'Loading...' : 'Initialize Webchat'}
+            {loading ? t('btn-loading') : t('btn-initialize')}
           </button>
 
           {/* Optional: Load default config button if env var is set */}
           {import.meta.env.VITE_BOTPRESS_CLIENT_ID && (
             <div style={{ marginTop: '12px', textAlign: 'center' }}>
-              <span style={{ color: '#666', fontSize: '12px' }}>or</span>
+              <span style={{ color: '#666', fontSize: '12px' }}>{t('label-or')}</span>
               <button
                 type="button"
                 onClick={handleLoadDefault}
@@ -149,7 +151,7 @@ export function InitializationForm({ onInitialize }: InitializationFormProps) {
                 }}
                 disabled={loading}
               >
-                Load Default Configuration
+                {t('btn-load-default')}
               </button>
             </div>
           )}

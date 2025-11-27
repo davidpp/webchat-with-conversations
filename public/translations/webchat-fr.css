@@ -1,0 +1,88 @@
+/**
+ * Webchat French Translations
+ *
+ * Usage:
+ * 1. Load this stylesheet: <link rel="stylesheet" href="webchat-fr.css">
+ * 2. Set language attribute: document.documentElement.setAttribute('data-lang', 'fr')
+ *
+ * Or via Botpress configuration:
+ * window.botpress.init({
+ *   clientId: "xxx",
+ *   configuration: {
+ *     additionalStylesheetUrl: "https://cdn.example.com/webchat-fr.css"
+ *   }
+ * })
+ */
+
+:root[data-lang="fr"] {
+  /* ============================================
+     BUTTONS
+     ============================================ */
+  --t-btn-new-conversation: '+ Nouvelle conversation';
+  --t-btn-new-short: 'Nouvelle conversation';
+  --t-btn-creating: 'Création...';
+  --t-btn-load-more: 'Charger plus';
+  --t-btn-initialize: 'Initialiser le Webchat';
+  --t-btn-loading: 'Chargement...';
+  --t-btn-load-default: 'Charger la configuration par défaut';
+
+  /* ============================================
+     HEADERS / LABELS
+     ============================================ */
+  --t-header-conversations: 'Conversations';
+  --t-header-chat: 'Discussion';
+  --t-label-client-id: 'ID Client ou URL du Script';
+  --t-label-embedded: 'Mode intégré';
+  --t-label-embedded-hint: 'Chat pleine page avec barre latérale pliable (comme ChatGPT)';
+  --t-title-init: 'Initialiser le Webchat';
+  --t-subtitle-init: 'Entrez un ID client Botpress ou une URL de script pour commencer';
+  --t-label-or: 'ou';
+
+  /* ============================================
+     STATES / MESSAGES
+     ============================================ */
+  --t-state-connecting: 'Connexion...';
+  --t-state-failed: 'Échec de connexion';
+  --t-state-no-conversations: 'Aucune conversation';
+  --t-state-empty-hint: 'Cliquez sur "Nouvelle conversation" pour commencer';
+  --t-state-loading-list: 'Chargement des conversations...';
+  --t-state-new-conversation: 'Nouvelle conversation';
+  --t-error-no-input: 'Veuillez entrer un ID client ou une URL';
+  --t-error-no-config: 'Aucun ID client par défaut configuré';
+  --t-error-fetch: 'Échec du chargement du script : {status}';
+  --t-error-generic: 'Une erreur est survenue';
+
+  /* ============================================
+     TIME / DATE (with interpolation)
+     ============================================ */
+  --t-time-just-now: 'À l\'instant';
+  --t-time-mins: 'il y a {n} min';
+  --t-time-hours: 'il y a {n} h';
+  --t-time-days: 'il y a {n} j';
+  --t-group-today: 'Aujourd\'hui';
+  --t-group-week: 'Cette semaine';
+  --t-group-month: 'Ce mois-ci';
+  --t-group-older: 'Plus ancien';
+
+  /* ============================================
+     ARIA LABELS (accessibility)
+     ============================================ */
+  --t-aria-back: 'Retour aux conversations';
+  --t-aria-close: 'Fermer';
+  --t-aria-open-sidebar: 'Ouvrir la barre latérale';
+  --t-aria-close-sidebar: 'Fermer la barre latérale';
+  --t-aria-new-conversation: 'Nouvelle conversation';
+  --t-aria-conversations: 'Conversations';
+
+  /* ============================================
+     PLACEHOLDERS
+     ============================================ */
+  --t-placeholder-input: 'ex: abc123 ou https://files.bpcontent.cloud/...';
+  --t-placeholder-composer: 'Posez une question...';
+
+  /* ============================================
+     WEBCHAT INTERNAL (CSS overrides)
+     ============================================ */
+  --t-date-today: 'Aujourd\'hui';
+  --t-date-yesterday: 'Hier';
+}

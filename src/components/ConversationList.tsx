@@ -1,5 +1,6 @@
 import type { ConversationPreview } from '../types/conversation'
 import { ConversationItem } from './ConversationItem'
+import { useTranslation } from '../i18n'
 import './ConversationList.css'
 
 interface ConversationListProps {
@@ -19,11 +20,13 @@ export function ConversationList({
   hasMore,
   isLoading,
 }: ConversationListProps) {
+  const { t } = useTranslation()
+
   if (conversations.length === 0 && !isLoading) {
     return (
       <div className="conversation-list-empty">
-        <p>No conversations yet</p>
-        <p className="conversation-list-empty-hint">Click "New Conversation" to start</p>
+        <p>{t('state-no-conversations')}</p>
+        <p className="conversation-list-empty-hint">{t('state-empty-hint')}</p>
       </div>
     )
   }
@@ -44,13 +47,13 @@ export function ConversationList({
       {isLoading && (
         <div className="conversation-list-loading">
           <div className="spinner" />
-          <span>Loading conversations...</span>
+          <span>{t('state-loading-list')}</span>
         </div>
       )}
 
       {hasMore && !isLoading && onLoadMore && (
         <button className="conversation-list-load-more" onClick={onLoadMore}>
-          Load More
+          {t('btn-load-more')}
         </button>
       )}
     </div>

@@ -1,5 +1,6 @@
 import { ChevronLeft, X } from 'lucide-react'
 import type { Configuration } from '@botpress/webchat'
+import { useTranslation } from '../i18n'
 import './UnifiedHeader.css'
 
 interface UnifiedHeaderProps {
@@ -17,7 +18,8 @@ export function UnifiedHeader({
   onBack,
   showBackButton = false
 }: UnifiedHeaderProps) {
-  const title = variant === 'list' ? 'Conversations' : (configuration.botName || 'Bot')
+  const { t } = useTranslation()
+  const title = variant === 'list' ? t('header-conversations') : (configuration.botName || 'Bot')
   const showDescription = variant === 'chat' && configuration.botDescription
 
   return (
@@ -28,7 +30,7 @@ export function UnifiedHeader({
           <button
             className="unified-header-action unified-header-back"
             onClick={onBack}
-            aria-label="Back to conversations"
+            aria-label={t('aria-back')}
           >
             <ChevronLeft size={16} />
           </button>
@@ -40,7 +42,7 @@ export function UnifiedHeader({
             <img
               className="unified-header-avatar-image"
               src={configuration.botAvatar}
-              alt={variant === 'list' ? 'Conversations' : (configuration.botName || 'Bot')}
+              alt={variant === 'list' ? t('aria-conversations') : (configuration.botName || 'Bot')}
             />
           </span>
         )}
@@ -57,7 +59,7 @@ export function UnifiedHeader({
         <button
           className="unified-header-action unified-header-close"
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t('aria-close')}
         >
           <X size={16} />
         </button>
