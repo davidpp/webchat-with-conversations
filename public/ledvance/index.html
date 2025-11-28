@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ledvance Support Chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8f9fa;
+    }
+    body {
+      overflow: hidden;
+    }
+    /* Full-screen mode - override inject.js default FAB positioning */
+    .bp-webchat-wrapper {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      border-radius: 0 !important;
+      z-index: 1 !important;
+    }
+    .bp-webchat-wrapper.bp-webchat-closed,
+    .bp-webchat-wrapper.bp-webchat-open {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0 !important;
+    }
+    .bp-webchat-iframe {
+      border-radius: 0 !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Load our inject.js first -->
+  <script src="/inject.js"></script>
+
+  <!-- Load the Ledvance-specific Botpress script (calls window.botpress.init) -->
+  <script src="https://files.bpcontent.cloud/2025/10/02/07/20251002074359-QIWP7U83.js" defer></script>
+
+  <script>
+    // Auto-open and handle language from URL
+    window.addEventListener('load', () => {
+      // Get language from URL param
+      const urlParams = new URLSearchParams(window.location.search)
+      const lang = urlParams.get('lang')
+
+      // Wait a bit for init to complete, then open and set language
+      setTimeout(() => {
+        window.botpress.open()
+        if (lang) {
+          window.botpress.setLanguage(lang)
+        }
+      }, 100)
+    })
+  </script>
+</body>
+</html>

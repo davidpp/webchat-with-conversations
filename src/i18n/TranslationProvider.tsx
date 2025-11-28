@@ -12,6 +12,34 @@ import { readAllTranslations } from './cssReader'
 import { interpolate } from './interpolate'
 import './translations.css'
 
+// Supported languages
+export type SupportedLanguage = 'en' | 'de' | 'fr'
+
+// Load language stylesheet dynamically
+export function loadLanguageStylesheet(lang: string): Promise<void> {
+  return new Promise((resolve) => {
+    if (lang === 'en') {
+      resolve()
+      return
+    }
+
+    const linkId = `webchat-lang-${lang}`
+    const existing = document.getElementById(linkId)
+    if (existing) {
+      resolve()
+      return
+    }
+
+    const link = document.createElement('link')
+    link.id = linkId
+    link.rel = 'stylesheet'
+    link.href = `/translations/webchat-${lang}.css`
+    link.onload = () => resolve()
+    link.onerror = () => resolve() // Continue even if stylesheet fails
+    document.head.appendChild(link)
+  })
+}
+
 interface TranslationContextValue {
   /**
    * Get a translated string by key, with optional interpolation.
@@ -61,17 +89,32 @@ export function TranslationProvider({
   }, [])
 
   const setLang = useCallback(
-    (newLang: string) => {
+    async (newLang: string) => {
+      // Load stylesheet first, then update state
+      await loadLanguageStylesheet(newLang)
       document.documentElement.setAttribute('data-lang', newLang)
       setLangState(newLang)
-      refresh()
+      // Small delay to ensure CSS is applied
+      requestAnimationFrame(() => {
+        refresh()
+      })
     },
     [refresh]
   )
 
-  // Set initial lang attribute
+  // Set initial lang attribute and load stylesheet
   useEffect(() => {
-    document.documentElement.setAttribute('data-lang', initialLang)
+    const init = async () => {
+      if (initialLang !== 'en') {
+        await loadLanguageStylesheet(initialLang)
+      }
+      document.documentElement.setAttribute('data-lang', initialLang)
+      // Refresh translations after stylesheet loads
+      requestAnimationFrame(() => {
+        setTranslations(readAllTranslations())
+      })
+    }
+    init()
   }, [initialLang])
 
   // Watch for stylesheet additions (external translations)
