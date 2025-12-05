@@ -2,26 +2,40 @@ import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-// Plugin to serve static HTML pages before SPA fallback
+// Middleware to handle /ledvance route
+function ledvanceMiddleware(req: { url?: string }, _res: unknown, next: () => void) {
+  const url = req.url?.split('?')[0]
+  const query = req.url?.includes('?') ? '?' + req.url.split('?')[1] : ''
+
+  // Serve /ledvance as static HTML
+  if (url === '/ledvance' || url === '/ledvance/') {
+    req.url = '/ledvance/index.html' + query
+  }
+  next()
+}
+
+// Plugin to serve static HTML pages and inject.js
 function staticHtmlPlugin(): Plugin {
   return {
     name: 'static-html-fallback',
     configureServer(server) {
-      // This runs BEFORE Vite's internal middlewares
       server.middlewares.use((req, _res, next) => {
-        const url = req.url?.split('?')[0] // Remove query string
+        const url = req.url?.split('?')[0]
         const query = req.url?.includes('?') ? '?' + req.url.split('?')[1] : ''
 
         // Serve /ledvance as static HTML
         if (url === '/ledvance' || url === '/ledvance/') {
           req.url = '/ledvance/index.html' + query
         }
-        // Serve /embed via React app (SPA route)
-        if (url === '/embed') {
-          req.url = '/index.html' + query
+        // Serve inject.tsx as /inject.js in dev mode
+        if (url === '/inject.js') {
+          req.url = '/src/inject/inject.tsx' + query
         }
         next()
       })
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(ledvanceMiddleware)
     },
   }
 }
@@ -44,16 +58,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
-        inject: path.resolve(__dirname, 'src/inject/inject.ts'),
-      },
-      output: {
-        entryFileNames: (chunkInfo) => {
-          // Output inject.js without hash for easy embedding
-          if (chunkInfo.name === 'inject') {
-            return 'inject.js'
-          }
-          return 'assets/[name]-[hash].js'
-        },
       },
     },
   },

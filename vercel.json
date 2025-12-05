@@ -5,7 +5,6 @@
   "framework": "vite",
   "rewrites": [
     { "source": "/ledvance", "destination": "/ledvance/index.html" },
-    { "source": "/embed", "destination": "/" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }

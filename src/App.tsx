@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { WebchatWithConversations } from './components/WebchatWithConversations'
 import { EmbeddedLayout } from './components/embedded'
-import { EmbedPage } from './pages/EmbedPage'
 import { InitializationForm } from './components/InitializationForm'
 import { extractConfigFromScript } from './utils/configParser'
 import type { Configuration } from '@botpress/webchat'
@@ -32,12 +31,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Check for /embed route - render EmbedPage directly
   // Note: /ledvance is served as static HTML from public/ledvance/index.html
-  const path = window.location.pathname
-  if (path === '/embed') {
-    return <EmbedPage />
-  }
+  // The inject.js now uses ShadowPortal directly, no /embed route needed
 
   // Check URL parameters on mount
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { Configuration } from '@botpress/webchat'
 import { PanelLeft, PanelLeftClose, SquarePen, Globe, ChevronDown } from 'lucide-react'
 import { useTranslation } from '../../i18n'
@@ -40,6 +40,7 @@ export function EmbeddedHeader({
 }: EmbeddedHeaderProps) {
   const { t, setLang, lang } = useTranslation()
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const currentLanguage = LANGUAGES.find(l => l.code === lang) || LANGUAGES[0]
 
@@ -49,22 +50,40 @@ export function EmbeddedHeader({
     setTimeout(() => {
       setLang(code)
       setDropdownOpen(false)
+
+      // Also update the bot with the new locale
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const botpress = (window as any).botpress
+      if (botpress?.updateUser) {
+        botpress.updateUser({ data: { locale: code } })
+      }
     }, 50)
   }
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside - Shadow DOM compatible
   useEffect(() => {
     if (!dropdownOpen) return
 
     const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Element
-      if (!target.closest('.language-dropdown')) {
+      // Use composedPath() to get the actual target path through Shadow DOM
+      const path = e.composedPath()
+      const clickedInsideDropdown = path.some(
+        (el) => el === dropdownRef.current
+      )
+      if (!clickedInsideDropdown) {
         setDropdownOpen(false)
       }
     }
 
-    document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
+    // Add a small delay to prevent the opening click from immediately closing
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside, true)
+    }, 0)
+
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('click', handleClickOutside, true)
+    }
   }, [dropdownOpen])
 
   return (
@@ -80,7 +99,7 @@ export function EmbeddedHeader({
       <h1 className="header-title">{configuration.botName || 'Chat'}</h1>
 
       {/* Language dropdown */}
-      <div className="language-dropdown">
+      <div className="language-dropdown" ref={dropdownRef}>
         <button
           className="header-btn language-btn"
           onClick={() => setDropdownOpen(!dropdownOpen)}
