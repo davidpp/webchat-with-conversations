@@ -121,6 +121,29 @@
   flex: 1;
 }
 
+/* Market menu with scrollable content */
+.market-menu {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Back button styling */
+.back-option {
+  color: var(--bpGray-500, #6b7280);
+  font-size: 0.8125rem;
+}
+
+.back-option:hover {
+  color: var(--bpGray-700, #374151);
+}
+
+/* Menu divider */
+.menu-divider {
+  height: 1px;
+  background: var(--bpGray-100, #e5e7eb);
+  margin: 4px 0;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .embedded-header {

@@ -48,8 +48,8 @@ export function useConversationList({
       // 2. Fetch last message for each conversation (limit to first 5 to avoid too many calls)
       const conversationsToFetch = convList.slice(0, Math.min(5, convList.length))
 
-      const withPreviews = await Promise.all(
-        conversationsToFetch.map(async (conv) => {
+      const withPreviews: ConversationPreview[] = await Promise.all(
+        conversationsToFetch.map(async (conv): Promise<ConversationPreview> => {
           try {
             const { messages } = await client.listConversationMessages({
               conversationId: conv.id,
@@ -58,7 +58,9 @@ export function useConversationList({
             const lastMessage = messages[0]
 
             return {
-              ...conv,
+              id: conv.id,
+              createdAt: conv.createdAt,
+              updatedAt: conv.updatedAt,
               lastMessage: lastMessage
                 ? {
                     text: lastMessage.payload.type === 'text'
@@ -71,15 +73,23 @@ export function useConversationList({
             }
           } catch (err) {
             console.error(`Failed to fetch messages for conversation ${conv.id}:`, err)
-            return conv
+            return {
+              id: conv.id,
+              createdAt: conv.createdAt,
+              updatedAt: conv.updatedAt,
+            }
           }
         })
       )
 
       // Add remaining conversations without previews
-      const remainingConversations = convList.slice(conversationsToFetch.length)
+      const remainingConversations: ConversationPreview[] = convList.slice(conversationsToFetch.length).map((conv) => ({
+        id: conv.id,
+        createdAt: conv.createdAt,
+        updatedAt: conv.updatedAt,
+      }))
 
-      const allConversations = [...withPreviews, ...remainingConversations]
+      const allConversations: ConversationPreview[] = [...withPreviews, ...remainingConversations]
 
       if (append) {
         setConversations((prev) => [...prev, ...allConversations])

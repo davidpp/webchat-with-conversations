@@ -12,8 +12,22 @@ import { readAllTranslations } from './cssReader'
 import { interpolate } from './interpolate'
 import './translations.css'
 
-// Supported languages
-export type SupportedLanguage = 'en' | 'de' | 'fr'
+// Supported languages - includes all languages from markets.ts
+// Languages without CSS translation files will fall back to English
+export type SupportedLanguage =
+  | 'en' // English
+  | 'de' // German
+  | 'fr' // French
+  | 'es' // Spanish
+  | 'pt' // Portuguese
+  | 'nl' // Dutch
+  | 'bg' // Bulgarian
+  | 'hr' // Croatian
+  | 'cs' // Czech
+  | 'da' // Danish
+  | 'fi' // Finnish
+  | 'hu' // Hungarian
+  | 'it' // Italian
 
 // Load language stylesheet dynamically
 export function loadLanguageStylesheet(lang: string): Promise<void> {

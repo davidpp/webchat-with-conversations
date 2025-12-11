@@ -4,6 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ledvance Support Chat</title>
+  <!-- Vite dev mode support - these 404 in production which is fine -->
+  <script type="module">
+    // Set up React refresh preamble for dev mode
+    // In production, import.meta.hot is undefined so this is skipped
+    if (import.meta.hot) {
+      import('/@react-refresh').then(({ injectIntoGlobalHook }) => {
+        injectIntoGlobalHook(window);
+        window.$RefreshReg$ = () => {};
+        window.$RefreshSig$ = () => (type) => type;
+      }).catch(() => {}); // Ignore errors in production
+    }
+  </script>
+  <script type="module" src="/@vite/client" onerror=""></script>
   <style>
     * {
       margin: 0;
@@ -72,9 +85,7 @@
 
       var script = document.createElement('script');
       script.src = '/inject.js';
-      if (window.location.port === '5173') {
-        script.type = 'module';
-      }
+      script.type = 'module'; // Required for dev mode (Vite serves ES modules)
       script.onload = function() {
         // Fetch and parse the Botpress config script
         fetch(SCRIPT_URL)

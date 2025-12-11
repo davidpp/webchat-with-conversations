@@ -1,8 +1,9 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import type { LanguageCode, MarketCode } from '../i18n/markets'
 
-// Supported languages
-export type SupportedLanguage = 'en' | 'de' | 'fr'
+// Re-export for convenience (use LanguageCode from markets.ts as source of truth)
+export type SupportedLanguage = LanguageCode
 
 // State types
 export type StateProps = 'initial' | 'opened' | 'closed'
@@ -28,6 +29,7 @@ export type InitProps = {
   botId?: string
   configuration?: WebchatConfiguration
   lang?: SupportedLanguage
+  market?: MarketCode
 }
 
 // Event types
@@ -38,6 +40,8 @@ export type Events = {
   'webchat:closed': Record<string, never>
   'webchat:config': { configuration: WebchatConfiguration }
   'languageChanged': { language: SupportedLanguage }
+  'marketChanged': { market: MarketCode }
+  'localeChanged': { locale: string; market?: MarketCode; language: SupportedLanguage }
   message: unknown
   error: unknown
   '*': { type: string; payload: unknown }
@@ -80,6 +84,7 @@ export type InjectStore = {
   conversationId?: string
   configuration: WebchatConfiguration
   currentLang: SupportedLanguage
+  currentMarket?: MarketCode
   error?: { type: string; message: string }
   userData?: UserData
 
@@ -99,6 +104,9 @@ export type InjectStore = {
   toggle: () => void
   setLanguage: (lang: SupportedLanguage) => void
   getLanguage: () => SupportedLanguage
+  setMarket: (market: MarketCode) => void
+  getMarket: () => MarketCode | undefined
+  getLocale: () => string
   setConversationId: (id: string | undefined) => void
   updateUser: (data: UserData) => void
   _setWebchatClient: (client: InjectStore['_webchatClient']) => void
@@ -129,6 +137,7 @@ const createInjectStore = () =>
         conversationId: undefined,
         configuration: { ...defaultConfiguration },
         currentLang: 'en' as SupportedLanguage,
+        currentMarket: undefined,
         error: undefined,
         userData: undefined,
         eventEmitter: new EventEmitter<Events>(),
@@ -141,7 +150,7 @@ const createInjectStore = () =>
             return
           }
 
-          const { clientId, botId, configuration, lang } = props
+          const { clientId, botId, configuration, lang, market } = props
 
           if (!clientId) {
             set({ error: { type: 'configuration', message: 'Client ID is required' } })
@@ -152,6 +161,7 @@ const createInjectStore = () =>
             clientId,
             botId,
             currentLang: lang || 'en',
+            currentMarket: market,
             configuration: { ...defaultConfiguration, ...configuration },
             initialized: true,
             state: 'closed',
@@ -193,10 +203,34 @@ const createInjectStore = () =>
         setLanguage: (lang: SupportedLanguage) => {
           set({ currentLang: lang })
           get().eventEmitter.emit('languageChanged', { language: lang })
+          // Also emit localeChanged with combined locale
+          const market = get().currentMarket
+          const locale = market ? `${market}-${lang}` : lang
+          get().eventEmitter.emit('localeChanged', { locale, market, language: lang })
         },
 
         // Get language
         getLanguage: () => get().currentLang,
+
+        // Set market
+        setMarket: (market: MarketCode) => {
+          set({ currentMarket: market })
+          get().eventEmitter.emit('marketChanged', { market })
+          // Also emit localeChanged with combined locale
+          const lang = get().currentLang
+          const locale = `${market}-${lang}`
+          get().eventEmitter.emit('localeChanged', { locale, market, language: lang })
+        },
+
+        // Get market
+        getMarket: () => get().currentMarket,
+
+        // Get combined locale (market-language or just language)
+        getLocale: () => {
+          const market = get().currentMarket
+          const lang = get().currentLang
+          return market ? `${market}-${lang}` : lang
+        },
 
         // Set conversation ID
         setConversationId: (id: string | undefined) => {

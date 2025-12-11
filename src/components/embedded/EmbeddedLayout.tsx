@@ -3,7 +3,7 @@ import { useWebchat, type Configuration, MessageList, Composer, enrichMessage, S
 import { EmbeddedSidebar } from './EmbeddedSidebar'
 import { EmbeddedHeader } from './EmbeddedHeader'
 import { useConversationList } from '../../hooks/useConversationList'
-import { useTranslation } from '../../i18n'
+import { useTranslation, type MarketCode } from '../../i18n'
 import { getUseInjectStore } from '../../inject/store'
 import './EmbeddedLayout.css'
 
@@ -42,6 +42,8 @@ interface EmbeddedLayoutProps {
   apiUrl?: string
   configuration: Configuration
   storageKey?: string
+  /** Optional market code - when provided, hides market selector and shows only language options */
+  market?: MarketCode
 }
 
 export function EmbeddedLayout({
@@ -49,6 +51,7 @@ export function EmbeddedLayout({
   apiUrl = 'https://webchat.botpress.cloud',
   configuration,
   storageKey,
+  market,
 }: EmbeddedLayoutProps) {
   const { t } = useTranslation()
   const chatContainerRef = useRef<HTMLDivElement>(null)
@@ -219,6 +222,7 @@ export function EmbeddedLayout({
             onToggleSidebar={handleToggleSidebar}
             sidebarOpen={sidebarOpen}
             onCreateConversation={handleCreateConversation}
+            market={market}
           />
 
           <div className="embedded-chat-area">
@@ -255,6 +259,7 @@ export function EmbeddedLayout({
                     composerPlaceholder={t('placeholder-composer')}
                     footer={configuration.footer}
                     connected={true}
+                    disableSendButton={webchat.disableSendButton}
                   />
                 </div>
               </div>
