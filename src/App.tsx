@@ -31,28 +31,14 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Note: /ledvance is served as static HTML from public/ledvance/index.html
+  // The inject.js now uses ShadowPortal directly, no /embed route needed
+
   // Check URL parameters on mount
   useEffect(() => {
     const checkUrlParams = async () => {
       try {
-        // Hardcoded routes
-        const path = window.location.pathname
-        if (path === '/ledvance') {
-          const scriptUrl = 'https://files.bpcontent.cloud/2025/10/02/07/20251002074359-QIWP7U83.js'
-          const response = await fetch(scriptUrl)
-          if (!response.ok) {
-            throw new Error(`Failed to fetch script: ${response.statusText}`)
-          }
-          const scriptContent = await response.text()
-          const config = extractConfigFromScript(scriptContent)
-          if (config) {
-            setClientId(config.clientId)
-            setConfiguration({ ...DEFAULT_CONFIGURATION, ...config.configuration })
-            setMode('embedded')
-          }
-          setLoading(false)
-          return
-        }
+        // Note: /ledvance is now served as static HTML from public/ledvance/index.html
 
         // Check for script URL in query params (e.g., ?script=https://...)
         const urlParams = new URLSearchParams(window.location.search)

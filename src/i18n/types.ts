@@ -21,6 +21,7 @@ export type TranslationKey =
   | 'btn-loading'
   | 'btn-load-default'
   | 'btn-reload'
+  | 'btn-back'
   // Headers / Labels
   | 'header-conversations'
   | 'header-chat'

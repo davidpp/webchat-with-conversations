@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ledvance Local - Support Chat</title>
+  <!-- Vite dev mode support - these 404 in production which is fine -->
+  <script type="module">
+    // Set up React refresh preamble for dev mode
+    // In production, import.meta.hot is undefined so this is skipped
+    if (import.meta.hot) {
+      import('/@react-refresh').then(({ injectIntoGlobalHook }) => {
+        injectIntoGlobalHook(window);
+        window.$RefreshReg$ = () => {};
+        window.$RefreshSig$ = () => (type) => type;
+      }).catch(() => {}); // Ignore errors in production
+    }
+  </script>
+  <script type="module" src="/@vite/client" onerror=""></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8f9fa;
+    }
+    body {
+      overflow: hidden;
+    }
+    /* Full-screen mode - override ShadowPortal default FAB positioning */
+    .bpChatContainer {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      border-radius: 0 !important;
+      z-index: 1 !important;
+    }
+    /* Hide the FAB button in full-screen mode */
+    .bpFabWrapper {
+      display: none !important;
+    }
+    /* Full-screen embedded container */
+    #bp-webchat-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Container for embedded webchat -->
+  <div id="bp-webchat-container"></div>
+
+  <!-- Load LOCAL inject.js (dev: served by Vite, preview: from dist/) -->
+  <!-- Uses DEV bot config for local testing -->
+  <script>
+    (function() {
+      var SCRIPT_URL = 'https://files.bpcontent.cloud/2025/06/04/08/20250604082135-XQ11SC01.js'; // DEV bot config
+
+      // Parse config from Botpress script content
+      function extractConfigFromScript(scriptContent) {
+        var initMatch = scriptContent.match(/window\.botpress\.init\s*\(\s*(\{[\s\S]*?\})\s*\)/);
+        if (!initMatch) return null;
+        try {
+          var fn = new Function('return (' + initMatch[1] + ')');
+          return fn();
+        } catch (e) {
+          console.error('Failed to parse config:', e);
+          return null;
+        }
+      }
+
+      var script = document.createElement('script');
+      script.src = '/inject.js';
+      script.type = 'module'; // Required for dev mode (Vite serves ES modules)
+      script.onload = function() {
+        // Fetch and parse the Botpress config script
+        fetch(SCRIPT_URL)
+          .then(function(res) { return res.text(); })
+          .then(function(scriptContent) {
+            var config = extractConfigFromScript(scriptContent);
+            if (config && window.botpress) {
+              // Merge with embedded mode config
+              config.configuration = config.configuration || {};
+              config.configuration.embeddedChatId = 'bp-webchat-container';
+              window.botpress.init(config);
+            }
+          })
+          .catch(function(err) {
+            console.error('Failed to load config:', err);
+          });
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
+
+  <script>
+    // Auto-open and handle language from URL
+    window.addEventListener('load', () => {
+      const urlParams = new URLSearchParams(window.location.search)
+      const lang = urlParams.get('lang') || 'en'
+
+      // Wait for init to complete, then set language and update user
+      const onInitialized = () => {
+        // Set UI language
+        window.botpress.setLanguage(lang)
+
+        // Pass locale to the bot via user data
+        if (window.botpress.updateUser) {
+          window.botpress.updateUser({
+            data: { locale: lang }
+          })
+        }
+
+        window.botpress.open()
+      }
+
+      if (window.botpress?.initialized) {
+        onInitialized()
+      } else {
+        window.botpress?.on?.('webchat:initialized', onInitialized)
+      }
+    })
+  </script>
+</body>
+</html>

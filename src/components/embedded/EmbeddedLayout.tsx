@@ -3,7 +3,8 @@ import { useWebchat, type Configuration, MessageList, Composer, enrichMessage, S
 import { EmbeddedSidebar } from './EmbeddedSidebar'
 import { EmbeddedHeader } from './EmbeddedHeader'
 import { useConversationList } from '../../hooks/useConversationList'
-import { useTranslation } from '../../i18n'
+import { useTranslation, type MarketCode } from '../../i18n'
+import { getUseInjectStore } from '../../inject/store'
 import './EmbeddedLayout.css'
 
 // Translate webchat internal date strings via DOM manipulation
@@ -41,6 +42,8 @@ interface EmbeddedLayoutProps {
   apiUrl?: string
   configuration: Configuration
   storageKey?: string
+  /** Optional market code - when provided, hides market selector and shows only language options */
+  market?: MarketCode
 }
 
 export function EmbeddedLayout({
@@ -48,6 +51,7 @@ export function EmbeddedLayout({
   apiUrl = 'https://webchat.botpress.cloud',
   configuration,
   storageKey,
+  market,
 }: EmbeddedLayoutProps) {
   const { t } = useTranslation()
   const chatContainerRef = useRef<HTMLDivElement>(null)
@@ -55,15 +59,20 @@ export function EmbeddedLayout({
   const [currentConversationId, setCurrentConversationId] = useState<string>()
   const [isSmallScreen, setIsSmallScreen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
+  // Track user credentials to enable conversation switching
+  // The useWebchat hook only respects conversationId prop when user.userToken is also provided
+  const [userCredentials, setUserCredentials] = useState<{ userToken: string; userId: string } | undefined>()
 
   // Translate webchat internal date strings
   useWebchatDateTranslation(chatContainerRef, t)
 
   // Initialize webchat for the current conversation
+  // Pass user credentials back to hook so it uses our conversationId prop
   const webchat = useWebchat({
     clientId,
     apiUrl,
     conversationId: currentConversationId,
+    user: userCredentials,
     storageKey,
   })
 
@@ -74,12 +83,35 @@ export function EmbeddedLayout({
     apiUrl,
   })
 
+  // Capture user credentials after first connection to enable conversation switching
+  useEffect(() => {
+    if (webchat.clientState === 'connected' && webchat.user && !userCredentials) {
+      setUserCredentials(webchat.user)
+    }
+  }, [webchat.clientState, webchat.user, userCredentials])
+
   // Set initial conversation when user is ready
   useEffect(() => {
     if (webchat.clientState === 'connected' && webchat.conversationId && !currentConversationId) {
       setCurrentConversationId(webchat.conversationId)
     }
   }, [webchat.clientState, webchat.conversationId, currentConversationId])
+
+  // Wire up the webchat client to the inject store for updateUser support
+  useEffect(() => {
+    if (webchat.clientState === 'connected' && webchat.client) {
+      getUseInjectStore().getState()._setWebchatClient({
+        updateUser: async (userData) => {
+          // webchat.client.updateUser expects UserProfile with 'data' property
+          await webchat.client.updateUser({ data: userData.data })
+        },
+      })
+    }
+    return () => {
+      // Clean up on unmount
+      getUseInjectStore().getState()._setWebchatClient(undefined)
+    }
+  }, [webchat.clientState, webchat.client])
 
   // Handle responsive behavior
   useEffect(() => {
@@ -190,6 +222,7 @@ export function EmbeddedLayout({
             onToggleSidebar={handleToggleSidebar}
             sidebarOpen={sidebarOpen}
             onCreateConversation={handleCreateConversation}
+            market={market}
           />
 
           <div className="embedded-chat-area">
@@ -226,6 +259,7 @@ export function EmbeddedLayout({
                     composerPlaceholder={t('placeholder-composer')}
                     footer={configuration.footer}
                     connected={true}
+                    disableSendButton={webchat.disableSendButton}
                   />
                 </div>
               </div>

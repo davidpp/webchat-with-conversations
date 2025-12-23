@@ -14,6 +14,7 @@ export const DEFAULTS: Record<TranslationKey, string> = {
   'btn-loading': 'Loading...',
   'btn-load-default': 'Load Default Configuration',
   'btn-reload': 'Reload Page',
+  'btn-back': 'Back',
 
   // Headers / Labels
   'header-conversations': 'Conversations',

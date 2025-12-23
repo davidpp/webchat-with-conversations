@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ledvance Dev - Support Chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8f9fa;
+    }
+    body {
+      overflow: hidden;
+    }
+    /* Full-screen embedded mode */
+    .bpChatContainer {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      border-radius: 0 !important;
+      z-index: 1 !important;
+    }
+    /* Hide the FAB button in full-screen mode */
+    .bpFabWrapper {
+      display: none !important;
+    }
+    #bp-webchat-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Container for embedded webchat (required for embedded mode) -->
+  <div id="bp-webchat-container"></div>
+
+  <!-- Our custom inject.js from CDN -->
+  <script src="https://files.bpcontent.cloud/2025/12/11/01/20251211015050-TTMNAOEH.js"></script>
+
+  <!-- Fetch config and inject embeddedChatId (default is bubble mode, this overrides to full-screen embedded) -->
+  <script>
+    fetch('https://files.bpcontent.cloud/2025/06/04/08/20250604082135-XQ11SC01.js')
+      .then(res => res.text())
+      .then(scriptContent => {
+        // Extract config from: window.botpress.init({...})
+        const match = scriptContent.match(/window\.botpress\.init\s*\(\s*(\{[\s\S]*?\})\s*\)/);
+        if (!match) {
+          console.error('Could not parse config from script');
+          return;
+        }
+
+        const config = new Function('return (' + match[1] + ')')();
+
+        // Add embedded mode config
+        config.configuration = config.configuration || {};
+        config.configuration.embeddedChatId = 'bp-webchat-container';
+
+        // Initialize
+        window.botpress.init(config);
+      });
+  </script>
+
+  <script>
+    // Auto-open and handle language from URL
+    window.addEventListener('load', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const lang = urlParams.get('lang') || 'en';
+
+      const onInitialized = () => {
+        window.botpress.setLanguage(lang);
+        if (window.botpress.updateUser) {
+          window.botpress.updateUser({ data: { locale: lang } });
+        }
+        window.botpress.open();
+      };
+
+      if (window.botpress?.initialized) {
+        onInitialized();
+      } else {
+        window.botpress?.on?.('webchat:initialized', onInitialized);
+      }
+    });
+  </script>
+</body>
+</html>
