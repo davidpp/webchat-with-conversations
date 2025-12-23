@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ledvance Support Chat - Integration Example</title>
+
+  <!--
+    ============================================================================
+    LEDVANCE WEBCHAT INTEGRATION EXAMPLE
+    ============================================================================
+
+    This file demonstrates how to embed the Ledvance support chat in full-screen
+    embedded mode with language/market support.
+
+    SCRIPTS USED:
+    - inject.js: Custom webchat with conversation sidebar (PRODUCTION)
+      https://files.bpcontent.cloud/2025/12/11/11/20251211112356-4J3G8L8Y.js
+
+    - config.js: Bot configuration from Botpress dashboard (PRODUCTION)
+      https://files.bpcontent.cloud/2025/10/02/07/20251002074359-QIWP7U83.js
+
+    ============================================================================
+  -->
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8f9fa;
+    }
+    body {
+      overflow: hidden;
+    }
+    /* Full-screen embedded mode - overrides default FAB/bubble positioning */
+    .bpChatContainer {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      border-radius: 0 !important;
+      z-index: 1 !important;
+    }
+    /* Hide the FAB button in full-screen mode */
+    .bpFabWrapper {
+      display: none !important;
+    }
+    /* Container must be positioned for embedded mode */
+    #bp-webchat-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Container for embedded webchat (required for embedded mode) -->
+  <div id="bp-webchat-container"></div>
+
+  <!--
+    ============================================================================
+    STEP 1: Load the custom inject.js script
+    ============================================================================
+    This script provides the webchat with conversation sidebar functionality.
+  -->
+  <script src="https://files.bpcontent.cloud/2025/12/11/11/20251211112356-4J3G8L8Y.js"></script>
+
+  <!--
+    ============================================================================
+    STEP 2: Fetch bot config and initialize in embedded mode
+    ============================================================================
+    The default config uses "bubble" mode (FAB button). We fetch it and add
+    embeddedChatId to enable full-screen embedded mode instead.
+  -->
+  <script>
+    fetch('https://files.bpcontent.cloud/2025/10/02/07/20251002074359-QIWP7U83.js')
+      .then(res => res.text())
+      .then(scriptContent => {
+        // Extract config object from: window.botpress.init({...})
+        const match = scriptContent.match(/window\.botpress\.init\s*\(\s*(\{[\s\S]*?\})\s*\)/);
+        if (!match) {
+          console.error('Could not parse config from script');
+          return;
+        }
+
+        const config = new Function('return (' + match[1] + ')')();
+
+        // Enable embedded mode by specifying the container element ID
+        config.configuration = config.configuration || {};
+        config.configuration.embeddedChatId = 'bp-webchat-container';
+
+        // Initialize the webchat
+        window.botpress.init(config);
+      });
+  </script>
+
+  <!--
+    ============================================================================
+    STEP 3: Set language/market and notify the bot
+    ============================================================================
+
+    LANGUAGE/MARKET OPTIONS:
+
+    The webchat supports the following locales:
+
+    Market-based (format: "market-language"):
+      - "ch-de" (Switzerland - German)
+      - "ch-fr" (Switzerland - French)
+      - "ch-it" (Switzerland - Italian)
+      - "at-de" (Austria - German)
+      - "de-de" (Germany - German)
+
+    Language-only (no market):
+      - "en" (English)
+      - "de" (German)
+      - "fr" (French)
+      - "it" (Italian)
+
+    HOW TO SET LOCALE FROM YOUR CODE:
+
+    Option A: Via URL parameter (shown below)
+      ?lang=ch-de
+
+    Option B: Programmatically after initialization
+      window.botpress.on('webchat:initialized', () => {
+        // Set the UI language (for translations)
+        window.botpress.setLanguage('de');
+
+        // Send locale to bot (for bot logic/responses)
+        window.botpress.updateUser({ data: { locale: 'ch-de' } });
+
+        // Open the chat
+        window.botpress.open();
+      });
+
+    Option C: Set market (shows only languages for that market)
+      window.botpress.setMarket('ch'); // Shows DE/FR/IT options only
+
+    IMPORTANT: Always call updateUser() to send the locale to the bot.
+    The bot uses this to determine response language and market-specific content.
+
+    ============================================================================
+  -->
+  <script>
+    window.addEventListener('load', () => {
+      // Get locale from URL parameter (e.g., ?lang=ch-de or ?lang=en)
+      const urlParams = new URLSearchParams(window.location.search);
+      const locale = urlParams.get('lang') || 'en';
+
+      const onInitialized = () => {
+        // Parse locale to extract language code
+        // "ch-de" -> "de", "en" -> "en"
+        const langCode = locale.includes('-') ? locale.split('-')[1] : locale;
+
+        // Set UI language for translations
+        window.botpress.setLanguage(langCode);
+
+        // Send full locale to bot (including market if present)
+        // The bot uses this for market-specific responses
+        if (window.botpress.updateUser) {
+          window.botpress.updateUser({ data: { locale: locale } });
+        }
+
+        // Auto-open the chat
+        window.botpress.open();
+      };
+
+      // Wait for webchat to be initialized
+      if (window.botpress?.initialized) {
+        onInitialized();
+      } else {
+        window.botpress?.on?.('webchat:initialized', onInitialized);
+      }
+    });
+  </script>
+
+  <!--
+    ============================================================================
+    AVAILABLE BOTPRESS API METHODS
+    ============================================================================
+
+    window.botpress.init(config)      - Initialize webchat with config
+    window.botpress.open()            - Open the chat window
+    window.botpress.close()           - Close the chat window
+    window.botpress.toggle()          - Toggle open/closed state
+    window.botpress.setLanguage(lang) - Set UI language ('en', 'de', 'fr', 'it')
+    window.botpress.getLanguage()     - Get current UI language
+    window.botpress.setMarket(market) - Set market ('ch', 'at', 'de')
+    window.botpress.getMarket()       - Get current market
+    window.botpress.getLocale()       - Get combined locale (e.g., 'ch-de')
+    window.botpress.updateUser(data)  - Send user data to bot
+    window.botpress.on(event, handler)- Subscribe to events
+
+    EVENTS:
+    - 'webchat:initialized' - Fired when webchat is ready
+    - 'webchat:opened'      - Fired when chat opens
+    - 'webchat:closed'      - Fired when chat closes
+    - 'languageChanged'     - Fired when language changes
+    - 'marketChanged'       - Fired when market changes
+    - 'localeChanged'       - Fired when locale changes (market or language)
+
+    ============================================================================
+  -->
+</body>
+</html>

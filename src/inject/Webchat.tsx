@@ -10,8 +10,10 @@ import { getUseInjectStore } from './store'
 import { ChatBox } from './ChatBox'
 import { TranslationProvider } from '../i18n/TranslationProvider'
 
-// Import CSS as inline strings for Shadow DOM
-// Note: Copied from @botpress/webchat/dist/style.css since package doesn't export it
+// Import webchat CSS as inline string for Shadow DOM
+// NOTE: This is a copy of @botpress/webchat/dist/style.css
+// Update it when upgrading @botpress/webchat:
+//   cp node_modules/@botpress/webchat/dist/style.css src/inject/styles/webchat.css
 import baseCssString from './styles/webchat.css?inline'
 
 export type WebchatProps = {

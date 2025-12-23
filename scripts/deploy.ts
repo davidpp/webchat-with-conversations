@@ -2,7 +2,7 @@ import { Client } from '@botpress/client'
 import * as fs from 'fs'
 import * as path from 'path'
 import { fileURLToPath } from 'url'
-import { deployConfigs, availableTargets, type DeployTarget } from './config.js'
+import { deployConfigs, availableTargets, type DeployTarget } from './config.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

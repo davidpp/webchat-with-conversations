@@ -219,6 +219,7 @@ export function WebchatWithConversations({
                         composerPlaceholder={configuration.composerPlaceholder}
                         footer={configuration.footer}
                         connected={true}
+                        disableSendButton={webchat.disableSendButton}
                       />
                     </div>
                   </>

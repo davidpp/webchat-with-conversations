@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ledvance Support Chat</title>
+  <title>Ledvance Local - Support Chat</title>
   <!-- Vite dev mode support - these 404 in production which is fine -->
   <script type="module">
     // Set up React refresh preamble for dev mode
@@ -65,10 +65,11 @@
   <!-- Container for embedded webchat -->
   <div id="bp-webchat-container"></div>
 
-  <!-- Load our ShadowPortal-based inject.js -->
+  <!-- Load LOCAL inject.js (dev: served by Vite, preview: from dist/) -->
+  <!-- Uses DEV bot config for local testing -->
   <script>
     (function() {
-      var SCRIPT_URL = 'https://files.bpcontent.cloud/2025/10/02/07/20251002074359-QIWP7U83.js';
+      var SCRIPT_URL = 'https://files.bpcontent.cloud/2025/06/04/08/20250604082135-XQ11SC01.js'; // DEV bot config
 
       // Parse config from Botpress script content
       function extractConfigFromScript(scriptContent) {
